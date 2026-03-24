@@ -1,0 +1,27 @@
+<!-- Login Form with username, password and Submit button -->
+<form novalidate (submit)="submit($event)">
+  <input
+    class="w-full px-4 py-2 border border-gray-300 rounded-lg"
+    [formField]="loginForm.username"
+    placeholder="Username"
+  />
+  @if (loginForm.username().invalid() && loginForm.username().touched() && isSubmitted()) {
+    <ul class="list-inside text-sm text-red-500 my-2">
+      @for (error of loginForm.username().errors(); track error) {
+        <li>{{ error.message }}</li>
+      }
+    </ul>
+  }
+  <input
+    class="w-full px-4 py-2 border border-gray-300 rounded-lg my-4"
+    [formField]="loginForm.password"
+    type="password"
+    placeholder="Password"
+  />
+  <button
+    class="bg-violet-500 hover:bg-violet-700 text-white px-6 py-2 rounded-full cursor-pointer"
+    type="submit"
+  >
+    Login
+  </button>
+</form>
