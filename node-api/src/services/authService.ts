@@ -5,7 +5,7 @@ import { MESSAGES } from "../constants/messages.js";
 
 // In a real application, refresh tokens should be stored in a database
 // with their associated user, expiration date, and optionally the device/IP.
-const refreshTokensDB = new Map();
+const refreshTokensDB = new Map<string, any>();
 
 const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET;
 const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET;
@@ -14,10 +14,10 @@ if (!ACCESS_TOKEN_SECRET || !REFRESH_TOKEN_SECRET) {
   throw new Error("FATAL: JWT Secrets are completely missing from .env!");
 }
 
-export const authenticateUser = async (username, password) => {
+export const authenticateUser = async (username: string, password: string) => {
   const user = userService.getUserByUsername(username);
 
-  if (!user) {
+  if (!user || !user.password) {
     return null;
   }
 
@@ -34,23 +34,23 @@ export const authenticateUser = async (username, password) => {
   return null;
 };
 
-export const generateAccessToken = (user) => {
+export const generateAccessToken = (user: any) => {
   const expiry = process.env.ACCESS_TOKEN_EXPIRY || "15m";
-  return jwt.sign(user, ACCESS_TOKEN_SECRET, { expiresIn: expiry });
+  return jwt.sign(user, ACCESS_TOKEN_SECRET as string, { expiresIn: expiry as any });
 };
 
-export const generateRefreshToken = (user) => {
+export const generateRefreshToken = (user: any) => {
   const expiry = process.env.REFRESH_TOKEN_EXPIRY || "7d";
   const refreshToken = jwt.sign(
     { id: user.id, username: user.username },
-    REFRESH_TOKEN_SECRET,
-    { expiresIn: expiry },
+    REFRESH_TOKEN_SECRET as string,
+    { expiresIn: expiry as any },
   );
   refreshTokensDB.set(refreshToken, { userId: user.id, used: false });
   return refreshToken;
 };
 
-export const invalidateAllTokensForUser = (userId) => {
+export const invalidateAllTokensForUser = (userId: number) => {
   for (const [token, data] of refreshTokensDB.entries()) {
     if (data.userId === userId) {
       refreshTokensDB.delete(token);
@@ -58,7 +58,7 @@ export const invalidateAllTokensForUser = (userId) => {
   }
 };
 
-export const verifyRefreshToken = (token) => {
+export const verifyRefreshToken = (token: string) => {
   const tokenData = refreshTokensDB.get(token);
 
   if (!tokenData) {
@@ -72,22 +72,22 @@ export const verifyRefreshToken = (token) => {
   }
 
   try {
-    const payload = jwt.verify(token, REFRESH_TOKEN_SECRET);
+    const payload = jwt.verify(token, REFRESH_TOKEN_SECRET as string) as jwt.JwtPayload;
     // Return a payload we can use to generate new tokens
-    const user = userService.getUserById(payload.id);
+    const user = userService.getUserById(payload.id as number);
     return { valid: true, user };
   } catch (err) {
     return { valid: false, user: null, message: MESSAGES.AUTH.INVALID_OR_EXPIRED_TOKEN };
   }
 };
 
-export const markTokenAsUsed = (token) => {
+export const markTokenAsUsed = (token: string) => {
   const tokenData = refreshTokensDB.get(token);
   if (tokenData) {
     tokenData.used = true;
   }
 };
 
-export const removeRefreshToken = (token) => {
+export const removeRefreshToken = (token: string) => {
   return refreshTokensDB.delete(token);
 };

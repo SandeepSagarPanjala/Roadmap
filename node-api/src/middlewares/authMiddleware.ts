@@ -1,5 +1,10 @@
 import jwt from "jsonwebtoken";
+import { Request, Response, NextFunction } from "express";
 import { MESSAGES } from "../constants/messages.js";
+
+export interface AuthRequest extends Request {
+  user?: string | jwt.JwtPayload;
+}
 
 const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET;
 
@@ -7,7 +12,7 @@ if (!ACCESS_TOKEN_SECRET) {
   throw new Error("FATAL: ACCESS_TOKEN_SECRET is missing from .env!");
 }
 
-export const authenticateToken = (req, res, next) => {
+export const authenticateToken = (req: AuthRequest, res: Response, next: NextFunction) => {
   // Try getting token from header
   const authHeader = req.headers["authorization"];
   const token = authHeader && authHeader.split(" ")[1]; // Bearer TOKEN

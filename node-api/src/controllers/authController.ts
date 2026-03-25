@@ -1,8 +1,9 @@
 import Joi from "joi";
+import { Request, Response } from "express";
 import * as authService from "../services/authService.js";
 import { MESSAGES } from "../constants/messages.js";
 
-export const login = async (req, res) => {
+export const login = async (req: Request, res: Response) => {
   const schema = Joi.object({
     username: Joi.string().required(),
     password: Joi.string().required(),
@@ -27,7 +28,7 @@ export const login = async (req, res) => {
   const refreshToken = authService.generateRefreshToken(user);
 
   // Send the ultra-secure HttpOnly Cookie directly to Chrome
-  const maxAgeMs = parseInt(process.env.COOKIE_MAX_AGE_MS, 10) || 7 * 24 * 60 * 60 * 1000;
+  const maxAgeMs = process.env.COOKIE_MAX_AGE_MS ? parseInt(process.env.COOKIE_MAX_AGE_MS, 10) : 7 * 24 * 60 * 60 * 1000;
   
   res.cookie('jwt', refreshToken, { 
     httpOnly: true, // Javascript CANNOT read this
@@ -42,7 +43,7 @@ export const login = async (req, res) => {
   });
 };
 
-export const refresh = (req, res) => {
+export const refresh = (req: Request, res: Response) => {
   // Read the cookie directly from the invisible browser headers
   const token = req.cookies?.jwt;
 
@@ -65,7 +66,7 @@ export const refresh = (req, res) => {
   const newAccessToken = authService.generateAccessToken(user);
   const newRefreshToken = authService.generateRefreshToken(user);
 
-  const maxAgeMs = parseInt(process.env.COOKIE_MAX_AGE_MS, 10) || 7 * 24 * 60 * 60 * 1000;
+  const maxAgeMs = process.env.COOKIE_MAX_AGE_MS ? parseInt(process.env.COOKIE_MAX_AGE_MS, 10) : 7 * 24 * 60 * 60 * 1000;
 
   res.cookie('jwt', newRefreshToken, { 
     httpOnly: true, 
@@ -79,7 +80,7 @@ export const refresh = (req, res) => {
   });
 };
 
-export const logout = (req, res) => {
+export const logout = (req: Request, res: Response) => {
   const token = req.cookies?.jwt;
 
   if (!token) {

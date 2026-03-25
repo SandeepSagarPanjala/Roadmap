@@ -1,7 +1,14 @@
 // This acts as your mock database / data layer
 // In a real application, this is where you'd use Mongoose or Entity Framework Core equivalent
 
-const users = [
+export interface User {
+  id: number;
+  name: string;
+  username: string;
+  password?: string;
+}
+
+const users: User[] = [
   {
     id: 1,
     name: "Sandeep",
@@ -27,8 +34,8 @@ export const getAllUsers = () => {
   return users.map(({ password, ...user }) => user);
 };
 
-export const getUserById = (id) => {
-  const user = users.find((x) => x.id === parseInt(id));
+export const getUserById = (id: string | number) => {
+  const user = users.find((x) => x.id === (typeof id === 'string' ? parseInt(id, 10) : id));
   if (user) {
     const { password, ...userWithoutPassword } = user;
     return userWithoutPassword;
@@ -36,11 +43,11 @@ export const getUserById = (id) => {
   return null;
 };
 
-export const getUserByUsername = (username) => {
+export const getUserByUsername = (username: string) => {
   return users.find((x) => x.username === username);
 };
 
-export const addUser = (name, username, hashedPassword) => {
+export const addUser = (name: string, username: string, hashedPassword: string) => {
   const user = {
     id: users.length + 1,
     name: name,

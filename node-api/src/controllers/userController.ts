@@ -1,16 +1,17 @@
 import Joi from "joi";
+import { Request, Response } from "express";
 // Import our business logic (the Service)
 import * as userService from "../services/userService.js";
 
-export const getAllUsers = (req, res) => {
+export const getAllUsers = (req: Request, res: Response) => {
   // Call the service to get raw data
   const users = userService.getAllUsers();
   // The controller's ONLY job is to send the HTTP response
   res.json(users);
 };
 
-export const getUserById = (req, res) => {
-  const user = userService.getUserById(req.params.id);
+export const getUserById = (req: Request, res: Response) => {
+  const user = userService.getUserById(req.params.id as string);
 
   if (!user) {
     res.status(404).send("User not found");
@@ -20,7 +21,7 @@ export const getUserById = (req, res) => {
   res.status(200).json(user);
 };
 
-export const addUser = async (req, res) => {
+export const addUser = async (req: Request, res: Response) => {
   // Validation belongs in the Controller (or a separate Validation Middleware)
   const schema = Joi.object({
     name: Joi.string().min(3).required(),

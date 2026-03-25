@@ -7,7 +7,7 @@ import compression from "compression";
 import cookieParser from "cookie-parser";
 import { MESSAGES } from "../constants/messages.js";
 
-export const applyGlobalMiddlewares = (app) => {
+export const applyGlobalMiddlewares = (app: express.Application) => {
   // HTTP request logger middleware
   const isProduction = process.env.NODE_ENV === "production";
   app.use(morgan(isProduction ? "combined" : "dev"));
