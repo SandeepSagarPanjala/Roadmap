@@ -20,10 +20,12 @@ export const getUserById = (req, res) => {
   res.status(200).json(user);
 };
 
-export const addUser = (req, res) => {
+export const addUser = async (req, res) => {
   // Validation belongs in the Controller (or a separate Validation Middleware)
   const schema = Joi.object({
     name: Joi.string().min(3).required(),
+    username: Joi.string().min(3).required(),
+    password: Joi.string().min(6).required(),
   });
 
   const { error } = schema.validate(req.body);
@@ -34,7 +36,13 @@ export const addUser = (req, res) => {
   }
 
   // Pass validated data down to the Service
-  const newUser = userService.addUser(req.body.name);
+  const bcrypt = await import("bcrypt");
+  const hashedPassword = await bcrypt.hash(req.body.password, 10);
+  const newUser = userService.addUser(
+    req.body.name,
+    req.body.username,
+    hashedPassword,
+  );
 
   res.status(201).json(newUser);
 };

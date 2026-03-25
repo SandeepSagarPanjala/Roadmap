@@ -8,6 +8,7 @@ import {
 } from "./src/middlewares/errorHandler.js";
 
 import userRoutes from "./src/routes/userRoutes.js";
+import authRoutes from "./src/routes/authRoutes.js";
 
 const app = express();
 
@@ -21,6 +22,7 @@ app.get("/", (req, res) => {
 
 // 3. Register your modular routes/controllers
 app.use("/users", userRoutes);
+app.use("/auth", authRoutes);
 
 // 4. Catch invalid routes (404)
 app.use(notFoundMiddleware);
