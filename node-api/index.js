@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import Joi from "joi";
 import helmet from "helmet";
+import rateLimit from "express-rate-limit";
 
 const app = express();
 
@@ -14,6 +15,23 @@ app.use(
     crossOriginResourcePolicy: { policy: "cross-origin" },
   }),
 );
+
+// Apply rate limiting middleware to all requests.
+// Industry standard: limit each IP to 100 requests per 15-minute window.
+// This helps mitigate brute-force and denial-of-service attacks.
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  limit: 100, // Limit each IP to 100 requests per `window`
+  standardHeaders: "draft-8", // Set modern RateLimit header (draft-8)
+  legacyHeaders: false, // Disable older X-RateLimit-* headers
+  message: {
+    status: 429,
+    message:
+      "Too many requests from this IP, please try again after 15 minutes",
+  },
+});
+
+app.use(limiter);
 
 app.use(cors());
 app.use(express.json());
