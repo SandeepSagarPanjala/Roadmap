@@ -29,7 +29,7 @@ export class RegisterComponent {
       this.error.set(null);
       
       // Hit Node API directly for registration since authService handles login/refresh
-      this.http.post('http://localhost:3000/api/auth/register', this.registerForm.value).subscribe({
+      this.http.post('/api/auth/register', this.registerForm.value).subscribe({
         next: () => {
           this.router.navigate(['/login']);
         },

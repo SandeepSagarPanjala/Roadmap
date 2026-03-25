@@ -39,7 +39,7 @@ export class AuthService {
   }
 
   login(credentials: any): Observable<any> {
-    return this.http.post<any>('http://localhost:3000/api/auth/login', credentials).pipe(
+    return this.http.post<any>('/api/auth/login', credentials).pipe(
       tap(res => {
         this.saveTokens({ accessToken: res.accessToken, refreshToken: res.refreshToken });
       })
@@ -53,7 +53,7 @@ export class AuthService {
       return throwError(() => new Error('No refresh token available'));
     }
 
-    return this.http.post<Tokens>('http://localhost:3000/api/auth/refresh', { token: refreshToken }).pipe(
+    return this.http.post<Tokens>('/api/auth/refresh', { token: refreshToken }).pipe(
       tap(res => {
         this.saveTokens({ accessToken: res.accessToken, refreshToken: res.refreshToken });
       })
@@ -64,7 +64,7 @@ export class AuthService {
     const token = this.getRefreshToken();
     if (token) {
       // Best Practice: Tell the Node API to delete it from the Map!
-      this.http.post('http://localhost:3000/api/auth/logout', { token }).subscribe({
+      this.http.post('/api/auth/logout', { token }).subscribe({
         next: () => this.executeLogout(),
         error: () => this.executeLogout()
       });
