@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import request from "supertest";
-import { app } from "../../app.js"; // Import the Express App (without starting the server!)
+import { app } from "./app.js"; // Import the Express App (without starting the server!)
 
 describe("App Health Check", () => {
   it("GET / should return WELCOME TO NODE API", async () => {
