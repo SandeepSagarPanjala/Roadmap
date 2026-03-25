@@ -9,16 +9,16 @@ export const routes: Routes = [
   },
   {
     path: 'login',
-    loadComponent: () => import('./pages/login.component').then(c => c.LoginComponent),
+    loadComponent: () => import('./pages/auth/login/login.component').then(c => c.LoginComponent),
   },
   {
     path: 'register',
-    loadComponent: () => import('./pages/register.component').then(c => c.RegisterComponent),
+    loadComponent: () => import('./pages/auth/register/register.component').then(c => c.RegisterComponent),
   },
   {
     path: 'dashboard',
     canActivate: [authGuard],
-    loadComponent: () => import('./pages/dashboard.component').then(c => c.DashboardComponent),
+    loadComponent: () => import('./pages/dashboard/dashboard.component').then(c => c.DashboardComponent),
   },
   {
     path: '**',
