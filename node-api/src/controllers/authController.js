@@ -1,5 +1,6 @@
 import Joi from "joi";
 import * as authService from "../services/authService.js";
+import { MESSAGES } from "../constants/messages.js";
 
 export const login = async (req, res) => {
   const schema = Joi.object({
@@ -19,7 +20,7 @@ export const login = async (req, res) => {
   );
 
   if (!user) {
-    return res.status(401).json({ message: "Invalid username or password" });
+    return res.status(401).json({ message: MESSAGES.AUTH.INVALID_CREDENTIALS });
   }
 
   const accessToken = authService.generateAccessToken(user);
@@ -46,7 +47,7 @@ export const refresh = (req, res) => {
   const token = req.cookies?.jwt;
 
   if (!token) {
-    return res.status(401).json({ message: "Refresh Token Cookie is missing" });
+    return res.status(401).json({ message: MESSAGES.AUTH.REFRESH_COOKIE_MISSING });
   }
 
   const result = authService.verifyRefreshToken(token);
@@ -54,7 +55,7 @@ export const refresh = (req, res) => {
   if (!result.valid) {
     return res
       .status(403)
-      .json({ message: result.message || "Refresh Token is invalid or expired" });
+      .json({ message: result.message || MESSAGES.AUTH.REFRESH_TOKEN_INVALID });
   }
 
   const user = result.user;
@@ -83,7 +84,7 @@ export const logout = (req, res) => {
 
   if (!token) {
     // If they have no cookie, just pretend it was successful so the frontend can clean up
-    return res.status(200).json({ message: "Already logged out" });
+    return res.status(200).json({ message: MESSAGES.AUTH.ALREADY_LOGGED_OUT });
   }
 
   // Delete from our Backend Memory
@@ -92,5 +93,5 @@ export const logout = (req, res) => {
   // Instruct Chrome to permanently destroy the cookie
   res.clearCookie('jwt', { httpOnly: true, sameSite: 'strict' });
   
-  return res.status(200).json({ message: "Logged out successfully" });
+  return res.status(200).json({ message: MESSAGES.AUTH.LOGGED_OUT_SUCCESS });
 };

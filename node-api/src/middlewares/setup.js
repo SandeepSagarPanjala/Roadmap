@@ -5,6 +5,7 @@ import rateLimit from "express-rate-limit";
 import morgan from "morgan";
 import compression from "compression";
 import cookieParser from "cookie-parser";
+import { MESSAGES } from "../constants/messages.js";
 
 export const applyGlobalMiddlewares = (app) => {
   // HTTP request logger middleware
@@ -26,15 +27,18 @@ export const applyGlobalMiddlewares = (app) => {
     legacyHeaders: false,
     message: {
       status: 429,
-      message:
-        "Too many requests from this IP, please try again after 15 minutes",
+      message: MESSAGES.RATE_LIMIT.TOO_MANY_REQUESTS,
     },
   });
   app.use(limiter);
 
-  // Enable Cross-Origin requests
+  // Enable Cross-Origin requests decoupled completely from hardcoded domains
+  const allowedOrigins = process.env.ALLOWED_ORIGINS 
+    ? process.env.ALLOWED_ORIGINS.split(",") 
+    : ["http://localhost:4200"];
+
   app.use(cors({
-    origin: ["http://localhost:4200"], // Explicitly allow the Angular Domain
+    origin: allowedOrigins,
     credentials: true // Crucial for HttpOnly Cookies!
   }));
 

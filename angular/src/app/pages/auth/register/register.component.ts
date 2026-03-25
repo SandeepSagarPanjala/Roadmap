@@ -3,7 +3,8 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
-import { environment } from '../../../../environments/environment';
+import { ApiRoutes } from '../../../core/constants/api.constants';
+import { Messages } from '../../../core/constants/messages.constants';
 
 @Component({
   selector: 'app-register',
@@ -30,14 +31,14 @@ export class RegisterComponent {
       this.error.set(null);
 
       // Hit Node API directly for registration since authService handles login/refresh
-      this.http.post(`${environment.apiUrl}/users/add`, this.registerForm.value).subscribe({
+      this.http.post(ApiRoutes.Users.Add, this.registerForm.value).subscribe({
         next: () => {
           this.router.navigate(['/login']);
         },
         error: (err) => {
           this.isLoading.set(false);
           this.error.set(
-            err.error?.message || 'Failed to create account. User might already exist.',
+            err.error?.message || Messages.Auth.RegistrationFailed,
           );
         },
       });

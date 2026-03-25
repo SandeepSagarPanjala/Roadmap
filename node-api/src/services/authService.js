@@ -1,6 +1,7 @@
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import * as userService from "./userService.js";
+import { MESSAGES } from "../constants/messages.js";
 
 // In a real application, refresh tokens should be stored in a database
 // with their associated user, expiration date, and optionally the device/IP.
@@ -61,13 +62,13 @@ export const verifyRefreshToken = (token) => {
   const tokenData = refreshTokensDB.get(token);
 
   if (!tokenData) {
-    return { valid: false, user: null, message: "Token not found" };
+    return { valid: false, user: null, message: MESSAGES.AUTH.TOKEN_NOT_FOUND };
   }
 
   if (tokenData.used) {
     // Token reuse detected!
     invalidateAllTokensForUser(tokenData.userId);
-    return { valid: false, user: null, message: "Token reuse detected! All sessions invalidated." };
+    return { valid: false, user: null, message: MESSAGES.AUTH.TOKEN_REUSE_DETECTED };
   }
 
   try {
@@ -76,7 +77,7 @@ export const verifyRefreshToken = (token) => {
     const user = userService.getUserById(payload.id);
     return { valid: true, user };
   } catch (err) {
-    return { valid: false, user: null, message: "Invalid or expired token" };
+    return { valid: false, user: null, message: MESSAGES.AUTH.INVALID_OR_EXPIRED_TOKEN };
   }
 };
 

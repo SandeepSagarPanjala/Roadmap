@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, tap, throwError } from 'rxjs';
 import { Router } from '@angular/router';
 import { environment } from '../../../environments/environment';
+import { ApiRoutes } from '../constants/api.constants';
 
 export interface Tokens {
   accessToken: string;
@@ -34,7 +35,7 @@ export class AuthService {
 
   login(credentials: any): Observable<any> {
     // Node API now sets an HttpOnly cookie on success!
-    return this.http.post<any>(`${environment.apiUrl}/auth/login`, credentials).pipe(
+    return this.http.post<any>(ApiRoutes.Auth.Login, credentials).pipe(
       tap(res => {
         this.saveTokens({ accessToken: res.accessToken });
       })
@@ -44,7 +45,7 @@ export class AuthService {
   // The Silent Rotation Function
   refreshTokens(): Observable<Tokens> {
     // Browser silently sends the Cookie! We no longer need to read it from anywhere visible to Angular.
-    return this.http.post<Tokens>(`${environment.apiUrl}/auth/refresh`, {}, { withCredentials: true }).pipe(
+    return this.http.post<Tokens>(ApiRoutes.Auth.Refresh, {}, { withCredentials: true }).pipe(
       tap(res => {
         this.saveTokens({ accessToken: res.accessToken });
       })
@@ -53,7 +54,7 @@ export class AuthService {
 
   logout(): void {
     // Blast the Node API to destroy the cookie and backend memory
-    this.http.post(`${environment.apiUrl}/auth/logout`, {}, { withCredentials: true }).subscribe({
+    this.http.post(ApiRoutes.Auth.Logout, {}, { withCredentials: true }).subscribe({
       next: () => this.executeLogout(),
       error: () => this.executeLogout()
     });

@@ -2,6 +2,7 @@ import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
+import { Messages } from '../../../core/constants/messages.constants';
 
 @Component({
   selector: 'app-login',
@@ -38,7 +39,7 @@ export class LoginComponent {
         next: () => this.router.navigate(['/dashboard']),
         error: (err) => {
           this.isLoading.set(false);
-          this.error.set(err.error?.message || 'Invalid credentials');
+          this.error.set(err.error?.message || Messages.Auth.LoginFailed);
         }
       });
     }

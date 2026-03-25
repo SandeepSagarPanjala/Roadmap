@@ -2,7 +2,7 @@ import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../core/services/auth.service';
-import { environment } from '../../../environments/environment';
+import { ApiRoutes } from '../../core/constants/api.constants';
 
 @Component({
   selector: 'app-dashboard',
@@ -16,7 +16,7 @@ export class DashboardComponent {
 
   testSecureApi() {
     console.log("🚀 Firing Secure Request to /users...");
-    this.http.get(`${environment.apiUrl}/users`).subscribe({
+    this.http.get(ApiRoutes.Users.GetAll).subscribe({
       next: (res) => console.log("✅ Success! Node Backend Returned:", res),
       error: (err) => console.error("❌ Failed API Call", err)
     });
