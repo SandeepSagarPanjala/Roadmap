@@ -1,3 +1,4 @@
+import "dotenv/config"; // Load environment variables from .env file immediately
 import express from "express";
 import cors from "cors";
 import Joi from "joi";
@@ -97,6 +98,8 @@ app.post("/users/add", (req, res) => {
   res.status(201).json(user);
 });
 
-app.listen(3000, () => {
-  console.log("Server is running on port 3000");
+const port = process.env.PORT || 3000;
+
+app.listen(port, () => {
+  console.log(`Server is running on port ${port}`);
 });
