@@ -3,8 +3,16 @@ import cors from "cors";
 import Joi from "joi";
 import helmet from "helmet";
 import rateLimit from "express-rate-limit";
+import morgan from "morgan";
+import compression from "compression";
 
 const app = express();
+
+// HTTP request logger middleware
+// Industry standard: Use 'combined' format for full logs in production,
+// and concise, colored 'dev' format for local development.
+const isProduction = process.env.NODE_ENV === "production";
+app.use(morgan(isProduction ? "combined" : "dev"));
 
 // Helmet helps secure your Node.js application by setting various HTTP headers.
 // It's highly recommended for production applications.
@@ -35,6 +43,15 @@ app.use(limiter);
 
 app.use(cors());
 app.use(express.json());
+
+// Compress all HTTP responses
+// This drastically decreases the size of the response body and increases speed.
+// Using a 1KB threshold is the industry standard (smaller responses aren't worth compressing).
+app.use(
+  compression({
+    threshold: 1024,
+  }),
+);
 
 const users = [
   { id: 1, name: "Sandeep" },
