@@ -42,19 +42,24 @@ export const refresh = (req, res) => {
     return res.status(401).json({ message: "Refresh Token is required" });
   }
 
-  const user = authService.verifyRefreshToken(token);
+  const result = authService.verifyRefreshToken(token);
 
-  if (!user) {
+  if (!result.valid) {
     return res
       .status(403)
-      .json({ message: "Refresh Token is invalid or expired" });
+      .json({ message: result.message || "Refresh Token is invalid or expired" });
   }
 
-  // Optionally generate new refresh token as well for refresh token rotation
+  const user = result.user;
+
+  // Rotate refresh token
+  authService.markTokenAsUsed(token);
   const newAccessToken = authService.generateAccessToken(user);
+  const newRefreshToken = authService.generateRefreshToken(user);
 
   res.status(200).json({
     accessToken: newAccessToken,
+    refreshToken: newRefreshToken,
   });
 };
 

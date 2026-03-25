@@ -4,7 +4,7 @@ import * as userService from "./userService.js";
 
 // In a real application, refresh tokens should be stored in a database
 // with their associated user, expiration date, and optionally the device/IP.
-const refreshTokens = [];
+const refreshTokensDB = new Map();
 
 // Fallback secrets in case .env is missing them
 const ACCESS_TOKEN_SECRET =
@@ -44,30 +44,48 @@ export const generateRefreshToken = (user) => {
     REFRESH_TOKEN_SECRET,
     { expiresIn: "7d" },
   );
-  refreshTokens.push(refreshToken);
+  refreshTokensDB.set(refreshToken, { userId: user.id, used: false });
   return refreshToken;
 };
 
+export const invalidateAllTokensForUser = (userId) => {
+  for (const [token, data] of refreshTokensDB.entries()) {
+    if (data.userId === userId) {
+      refreshTokensDB.delete(token);
+    }
+  }
+};
+
 export const verifyRefreshToken = (token) => {
-  if (!refreshTokens.includes(token)) {
-    return null;
+  const tokenData = refreshTokensDB.get(token);
+
+  if (!tokenData) {
+    return { valid: false, user: null, message: "Token not found" };
+  }
+
+  if (tokenData.used) {
+    // Token reuse detected!
+    invalidateAllTokensForUser(tokenData.userId);
+    return { valid: false, user: null, message: "Token reuse detected! All sessions invalidated." };
   }
 
   try {
     const payload = jwt.verify(token, REFRESH_TOKEN_SECRET);
     // Return a payload we can use to generate new tokens
     const user = userService.getUserById(payload.id);
-    return user;
+    return { valid: true, user };
   } catch (err) {
-    return null;
+    return { valid: false, user: null, message: "Invalid or expired token" };
+  }
+};
+
+export const markTokenAsUsed = (token) => {
+  const tokenData = refreshTokensDB.get(token);
+  if (tokenData) {
+    tokenData.used = true;
   }
 };
 
 export const removeRefreshToken = (token) => {
-  const index = refreshTokens.indexOf(token);
-  if (index > -1) {
-    refreshTokens.splice(index, 1);
-    return true;
-  }
-  return false;
+  return refreshTokensDB.delete(token);
 };
