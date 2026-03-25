@@ -20,9 +20,9 @@ app.get("/", (req, res) => {
   res.send("WELCOME TO NODE API");
 });
 
-// 3. Register your modular routes/controllers
-app.use("/users", userRoutes);
-app.use("/auth", authRoutes);
+// 3. Register your modular routes/controllers under the /api prefix
+app.use("/api/users", userRoutes);
+app.use("/api/auth", authRoutes);
 
 // 4. Catch invalid routes (404)
 app.use(notFoundMiddleware);

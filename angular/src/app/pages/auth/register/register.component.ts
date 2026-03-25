@@ -17,7 +17,7 @@ export class RegisterComponent {
 
   registerForm = this.fb.group({
     username: ['', Validators.required],
-    password: ['', Validators.required]
+    password: ['', Validators.required],
   });
 
   isLoading = signal(false);
@@ -27,16 +27,18 @@ export class RegisterComponent {
     if (this.registerForm.valid) {
       this.isLoading.set(true);
       this.error.set(null);
-      
+
       // Hit Node API directly for registration since authService handles login/refresh
-      this.http.post('/api/auth/register', this.registerForm.value).subscribe({
+      this.http.post('/api/users/add', this.registerForm.value).subscribe({
         next: () => {
           this.router.navigate(['/login']);
         },
         error: (err) => {
           this.isLoading.set(false);
-          this.error.set(err.error?.message || 'Failed to create account. User might already exist.');
-        }
+          this.error.set(
+            err.error?.message || 'Failed to create account. User might already exist.',
+          );
+        },
       });
     }
   }

@@ -6,19 +6,19 @@ const users = [
     id: 1,
     name: "Sandeep",
     username: "sandeep",
-    password: "$2b$10$X8m1D5/e6iN9wO9G5DpwFOWZJ1b7K7ZkK1h0oZ8B1fXQO4l9w5M1S",
+    password: "$2b$10$wWErQglICnIzCCNOJ3stcuFXbVo4fUVJaha3u5ygEi/mefvUFxRs6",
   }, // test1234
   {
     id: 2,
     name: "John",
     username: "john",
-    password: "$2b$10$X8m1D5/e6iN9wO9G5DpwFOWZJ1b7K7ZkK1h0oZ8B1fXQO4l9w5M1S",
+    password: "$2b$10$wWErQglICnIzCCNOJ3stcuFXbVo4fUVJaha3u5ygEi/mefvUFxRs6",
   },
   {
     id: 3,
     name: "Jane",
     username: "jane",
-    password: "$2b$10$X8m1D5/e6iN9wO9G5DpwFOWZJ1b7K7ZkK1h0oZ8B1fXQO4l9w5M1S",
+    password: "$2b$10$wWErQglICnIzCCNOJ3stcuFXbVo4fUVJaha3u5ygEi/mefvUFxRs6",
   },
 ];
 

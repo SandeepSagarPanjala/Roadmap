@@ -28,6 +28,7 @@ export class LoginComponent {
 
   isLoading = signal(false);
   error = signal<string | null>(null);
+  showPassword = signal(false);
 
   onSubmit() {
     if (this.loginForm.valid) {
