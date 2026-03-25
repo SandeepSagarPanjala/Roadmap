@@ -1,21 +1,27 @@
 import { Routes } from '@angular/router';
-import { ABOUT_ROUTES } from './about.routes';
-import { AboutPage } from './pages/about.page';
-import { ContactPage } from './pages/contact.page';
+import { authGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
   {
     path: '',
-    redirectTo: 'about',
+    redirectTo: 'login',
     pathMatch: 'full',
   },
   {
-    path: 'about',
-    component: AboutPage,
-    children: ABOUT_ROUTES,
+    path: 'login',
+    loadComponent: () => import('./pages/login.component').then(c => c.LoginComponent),
   },
   {
-    path: 'contact',
-    component: ContactPage,
+    path: 'register',
+    loadComponent: () => import('./pages/register.component').then(c => c.RegisterComponent),
   },
+  {
+    path: 'dashboard',
+    canActivate: [authGuard],
+    loadComponent: () => import('./pages/dashboard.component').then(c => c.DashboardComponent),
+  },
+  {
+    path: '**',
+    redirectTo: 'login' // Global fallback redirects lost users to login securely
+  }
 ];
