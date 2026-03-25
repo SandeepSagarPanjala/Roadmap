@@ -1,55 +1,49 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  linkedSignal,
-  Signal,
-  signal,
-  WritableSignal,
-} from '@angular/core';
-import { email, form, FormField, required } from '@angular/forms/signals';
-
-interface LoginModel {
-  username: string;
-  password: string;
-}
-
+import { JsonPipe } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
+import { ChangeDetectionStrategy, Component, inject, signal, WritableSignal } from '@angular/core';
 @Component({
   selector: 'app-contact-page',
   standalone: true,
   templateUrl: './contact.page.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [FormField],
+  imports: [JsonPipe],
 })
 export class ContactPage {
-  loginModel: WritableSignal<LoginModel> = signal({
-    username: '',
-    password: '',
-  });
+  private readonly http = inject(HttpClient);
+  users: WritableSignal<object[]> = signal([]);
+  name = signal('');
+  error: WritableSignal<object> = signal({});
 
-  isSubmitted = signal(false);
+  nameChanged(event: Event) {
+    this.name.set((event.target as HTMLInputElement).value);
+  }
 
-  isValidEmail = linkedSignal(() => {
-    const emailValue = this.loginModel().username;
-    const value = String(emailValue ?? '').trim();
-    if (!value) return false;
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(value);
-  });
+  addUser() {
+    const user = { name: this.name() };
+    this.http.post('http://localhost:3000/users/add', user).subscribe({
+      next: (response) => {
+        this.users.update((users) => [...users, response]);
+        this.name.set('');
+        this.error.set({});
+        console.log('User added successfully:', response);
+      },
+      error: (error) => {
+        this.error.set(error);
+        console.error('Error adding user:', error);
+      },
+    });
+  }
 
-  loginForm = form(this.loginModel, (s) => {
-    required(s.username, { message: 'Username is required' });
-    email(s.username, { message: 'Value is not a valid email' });
-    required(s.password, { message: 'Password is required' });
-  });
-
-  submit($event: Event) {
-    $event.preventDefault();
-    this.isSubmitted.set(true);
-    const { username, password } = this.loginModel();
-    if (this.loginForm().invalid()) {
-      console.log('Form is invalid. Please fill in all required fields.');
-      return;
-    }
-    console.log('Login submitted with:', { username, password });
+  getUsers() {
+    this.http.get('http://localhost:3000/users').subscribe({
+      next: (res) => {
+        this.error.set({});
+        this.users.set(res as object[]);
+      },
+      error: (error) => {
+        this.error.set(error);
+        console.error('Error fetching users:', error);
+      },
+    });
   }
 }

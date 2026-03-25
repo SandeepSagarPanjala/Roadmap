@@ -1,27 +1,32 @@
-<!-- Login Form with username, password and Submit button -->
-<form novalidate (submit)="submit($event)">
-  <input
-    class="w-full px-4 py-2 border border-gray-300 rounded-lg"
-    [formField]="loginForm.username"
-    placeholder="Username"
-  />
-  @if (loginForm.username().invalid() && loginForm.username().touched() && isSubmitted()) {
-    <ul class="list-inside text-sm text-red-500 my-2">
-      @for (error of loginForm.username().errors(); track error) {
-        <li>{{ error.message }}</li>
-      }
-    </ul>
-  }
-  <input
-    class="w-full px-4 py-2 border border-gray-300 rounded-lg my-4"
-    [formField]="loginForm.password"
-    type="password"
-    placeholder="Password"
-  />
-  <button
-    class="bg-violet-500 hover:bg-violet-700 text-white px-6 py-2 rounded-full cursor-pointer"
-    type="submit"
-  >
-    Login
-  </button>
-</form>
+@if (error()) {
+  <h1 class="text-2xl font-bold text-red-400 mb-4">{{ error() | json }}</h1>
+}
+
+<button
+  class="bg-violet-500 hover:bg-violet-700 text-white px-6 py-2 rounded-full cursor-pointer"
+  type="button"
+  (click)="getUsers()"
+>
+  Get Users
+</button>
+
+<hr />
+
+<input
+  type="text"
+  placeholder="Enter name"
+  (input)="nameChanged($event)"
+  class="w-full max-w-md px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent"
+/>
+<button
+  class="bg-violet-500 hover:bg-violet-700 text-white px-6 py-2 rounded-full cursor-pointer"
+  type="button"
+  (click)="addUser()"
+>
+  Add User
+</button>
+
+<hr />
+<div>
+  {{ users() | json }}
+</div>
