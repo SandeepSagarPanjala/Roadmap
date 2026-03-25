@@ -2,10 +2,10 @@ import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap, throwError } from 'rxjs';
 import { Router } from '@angular/router';
+import { environment } from '../../../environments/environment';
 
 export interface Tokens {
   accessToken: string;
-  refreshToken: string;
 }
 
 @Injectable({
@@ -19,58 +19,44 @@ export class AuthService {
   public readonly isAuthenticated = signal<boolean>(!!this.getAccessToken());
 
   getAccessToken(): string | null {
-    return localStorage.getItem('accessToken');
-  }
-
-  getRefreshToken(): string | null {
-    return localStorage.getItem('refreshToken');
+    return localStorage.getItem(environment.tokenStorageKey);
   }
 
   saveTokens(tokens: Tokens): void {
-    localStorage.setItem('accessToken', tokens.accessToken);
-    localStorage.setItem('refreshToken', tokens.refreshToken);
+    localStorage.setItem(environment.tokenStorageKey, tokens.accessToken);
     this.isAuthenticated.set(true); // Signal reactivity triggers UI change!
   }
 
   clearTokens(): void {
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('refreshToken');
+    localStorage.removeItem(environment.tokenStorageKey);
     this.isAuthenticated.set(false); // Signal reactivity triggers UI change!
   }
 
   login(credentials: any): Observable<any> {
-    return this.http.post<any>('/api/auth/login', credentials).pipe(
+    // Node API now sets an HttpOnly cookie on success!
+    return this.http.post<any>(`${environment.apiUrl}/auth/login`, credentials).pipe(
       tap(res => {
-        this.saveTokens({ accessToken: res.accessToken, refreshToken: res.refreshToken });
+        this.saveTokens({ accessToken: res.accessToken });
       })
     );
   }
 
   // The Silent Rotation Function
   refreshTokens(): Observable<Tokens> {
-    const refreshToken = this.getRefreshToken();
-    if (!refreshToken) {
-      return throwError(() => new Error('No refresh token available'));
-    }
-
-    return this.http.post<Tokens>('/api/auth/refresh', { token: refreshToken }).pipe(
+    // Browser silently sends the Cookie! We no longer need to read it from anywhere visible to Angular.
+    return this.http.post<Tokens>(`${environment.apiUrl}/auth/refresh`, {}, { withCredentials: true }).pipe(
       tap(res => {
-        this.saveTokens({ accessToken: res.accessToken, refreshToken: res.refreshToken });
+        this.saveTokens({ accessToken: res.accessToken });
       })
     );
   }
 
   logout(): void {
-    const token = this.getRefreshToken();
-    if (token) {
-      // Best Practice: Tell the Node API to delete it from the Map!
-      this.http.post('/api/auth/logout', { token }).subscribe({
-        next: () => this.executeLogout(),
-        error: () => this.executeLogout()
-      });
-    } else {
-      this.executeLogout();
-    }
+    // Blast the Node API to destroy the cookie and backend memory
+    this.http.post(`${environment.apiUrl}/auth/logout`, {}, { withCredentials: true }).subscribe({
+      next: () => this.executeLogout(),
+      error: () => this.executeLogout()
+    });
   }
 
   private executeLogout(): void {

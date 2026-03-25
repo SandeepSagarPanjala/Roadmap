@@ -6,13 +6,12 @@ import * as userService from "./userService.js";
 // with their associated user, expiration date, and optionally the device/IP.
 const refreshTokensDB = new Map();
 
-// Fallback secrets in case .env is missing them
-const ACCESS_TOKEN_SECRET =
-  process.env.ACCESS_TOKEN_SECRET ||
-  "fallback_access_secret_do_not_use_in_prod";
-const REFRESH_TOKEN_SECRET =
-  process.env.REFRESH_TOKEN_SECRET ||
-  "fallback_refresh_secret_do_not_use_in_prod";
+const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET;
+const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET;
+
+if (!ACCESS_TOKEN_SECRET || !REFRESH_TOKEN_SECRET) {
+  throw new Error("FATAL: JWT Secrets are completely missing from .env!");
+}
 
 export const authenticateUser = async (username, password) => {
   const user = userService.getUserByUsername(username);
@@ -35,14 +34,16 @@ export const authenticateUser = async (username, password) => {
 };
 
 export const generateAccessToken = (user) => {
-  return jwt.sign(user, ACCESS_TOKEN_SECRET, { expiresIn: "15m" }); // 15 minutes is typical for access token
+  const expiry = process.env.ACCESS_TOKEN_EXPIRY || "15m";
+  return jwt.sign(user, ACCESS_TOKEN_SECRET, { expiresIn: expiry });
 };
 
 export const generateRefreshToken = (user) => {
+  const expiry = process.env.REFRESH_TOKEN_EXPIRY || "7d";
   const refreshToken = jwt.sign(
     { id: user.id, username: user.username },
     REFRESH_TOKEN_SECRET,
-    { expiresIn: "7d" },
+    { expiresIn: expiry },
   );
   refreshTokensDB.set(refreshToken, { userId: user.id, used: false });
   return refreshToken;

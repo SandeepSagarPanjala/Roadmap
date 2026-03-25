@@ -4,6 +4,7 @@ import helmet from "helmet";
 import rateLimit from "express-rate-limit";
 import morgan from "morgan";
 import compression from "compression";
+import cookieParser from "cookie-parser";
 
 export const applyGlobalMiddlewares = (app) => {
   // HTTP request logger middleware
@@ -32,7 +33,13 @@ export const applyGlobalMiddlewares = (app) => {
   app.use(limiter);
 
   // Enable Cross-Origin requests
-  app.use(cors());
+  app.use(cors({
+    origin: ["http://localhost:4200"], // Explicitly allow the Angular Domain
+    credentials: true // Crucial for HttpOnly Cookies!
+  }));
+
+  // Parse HttpOnly Cookies
+  app.use(cookieParser());
 
   // Parse incoming JSON payloads
   app.use(express.json());

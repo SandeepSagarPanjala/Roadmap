@@ -3,6 +3,7 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-register',
@@ -29,7 +30,7 @@ export class RegisterComponent {
       this.error.set(null);
 
       // Hit Node API directly for registration since authService handles login/refresh
-      this.http.post('/api/users/add', this.registerForm.value).subscribe({
+      this.http.post(`${environment.apiUrl}/users/add`, this.registerForm.value).subscribe({
         next: () => {
           this.router.navigate(['/login']);
         },

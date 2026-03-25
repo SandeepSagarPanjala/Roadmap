@@ -25,21 +25,28 @@ export const login = async (req, res) => {
   const accessToken = authService.generateAccessToken(user);
   const refreshToken = authService.generateRefreshToken(user);
 
-  // Consider placing refreshToken in an HttpOnly cookie for better security
-  // res.cookie('jwt', refreshToken, { httpOnly: true, secure: true, maxAge: 7 * 24 * 60 * 60 * 1000 });
+  // Send the ultra-secure HttpOnly Cookie directly to Chrome
+  const maxAgeMs = parseInt(process.env.COOKIE_MAX_AGE_MS, 10) || 7 * 24 * 60 * 60 * 1000;
+  
+  res.cookie('jwt', refreshToken, { 
+    httpOnly: true, // Javascript CANNOT read this
+    secure: process.env.NODE_ENV === 'production', // Use HTTPS in production
+    sameSite: 'strict', // Stop CSRF Fake Links
+    maxAge: maxAgeMs // Fully decoupled
+  });
+
   res.status(200).json({
     accessToken,
-    refreshToken,
     user,
   });
 };
 
 export const refresh = (req, res) => {
-  // Try to get token from body, or headers, etc.
-  const { token } = req.body;
+  // Read the cookie directly from the invisible browser headers
+  const token = req.cookies?.jwt;
 
   if (!token) {
-    return res.status(401).json({ message: "Refresh Token is required" });
+    return res.status(401).json({ message: "Refresh Token Cookie is missing" });
   }
 
   const result = authService.verifyRefreshToken(token);
@@ -52,29 +59,38 @@ export const refresh = (req, res) => {
 
   const user = result.user;
 
-  // Rotate refresh token
+  // Rotate refresh token securely
   authService.markTokenAsUsed(token);
   const newAccessToken = authService.generateAccessToken(user);
   const newRefreshToken = authService.generateRefreshToken(user);
 
+  const maxAgeMs = parseInt(process.env.COOKIE_MAX_AGE_MS, 10) || 7 * 24 * 60 * 60 * 1000;
+
+  res.cookie('jwt', newRefreshToken, { 
+    httpOnly: true, 
+    secure: process.env.NODE_ENV === 'production', 
+    sameSite: 'strict', 
+    maxAge: maxAgeMs 
+  });
+
   res.status(200).json({
     accessToken: newAccessToken,
-    refreshToken: newRefreshToken,
   });
 };
 
 export const logout = (req, res) => {
-  const { token } = req.body;
+  const token = req.cookies?.jwt;
 
   if (!token) {
-    return res.status(400).json({ message: "Refresh Token is required" });
+    // If they have no cookie, just pretend it was successful so the frontend can clean up
+    return res.status(200).json({ message: "Already logged out" });
   }
 
-  if (authService.removeRefreshToken(token)) {
-    // If you used HttpOnly cookies for refresh token, clear it here:
-    // res.clearCookie('jwt');
-    return res.status(200).json({ message: "Logged out successfully" });
-  }
+  // Delete from our Backend Memory
+  authService.removeRefreshToken(token);
 
-  return res.status(403).json({ message: "Token not found" });
+  // Instruct Chrome to permanently destroy the cookie
+  res.clearCookie('jwt', { httpOnly: true, sameSite: 'strict' });
+  
+  return res.status(200).json({ message: "Logged out successfully" });
 };

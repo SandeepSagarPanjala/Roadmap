@@ -1,8 +1,10 @@
 import jwt from "jsonwebtoken";
 
-const ACCESS_TOKEN_SECRET =
-  process.env.ACCESS_TOKEN_SECRET ||
-  "fallback_access_secret_do_not_use_in_prod";
+const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET;
+
+if (!ACCESS_TOKEN_SECRET) {
+  throw new Error("FATAL: ACCESS_TOKEN_SECRET is missing from .env!");
+}
 
 export const authenticateToken = (req, res, next) => {
   // Try getting token from header
@@ -15,9 +17,10 @@ export const authenticateToken = (req, res, next) => {
 
   jwt.verify(token, ACCESS_TOKEN_SECRET, (err, user) => {
     if (err) {
-      // 403 means that the client provided a token but it's invalid (e.g., expired)
+      // 401 means Authentication Failed (Token is expired or completely invalid)
+      // 403 is for Authorization (You are a User trying to hit an Admin route)
       return res
-        .status(403)
+        .status(401)
         .json({ message: "Access Token is invalid or expired" });
     }
 
