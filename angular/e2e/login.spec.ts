@@ -1,6 +1,10 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Login Validation & Flows', () => {
+  // CRITICAL: We don't want the Global Login State injected into this Test Suite, otherwise we'd start at the dashboard!
+  // This physically resets localStorage cookies back to completely empty precisely for login specs:
+  test.use({ storageState: { cookies: [], origins: [] } });
+
   test('submit button explicitly requires both fields to be filled', async ({ page }) => {
     await page.goto('/login');
     

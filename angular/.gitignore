@@ -47,3 +47,4 @@ Thumbs.db
 /playwright-report/
 /test-results/
 /test-snapshots/
+e2e/.auth/
