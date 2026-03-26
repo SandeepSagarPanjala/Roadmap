@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { HttpRequest, HttpResponse } from '@angular/common/http';
-import { of } from 'rxjs';
+import { firstValueFrom, of } from 'rxjs';
 
 import { authInterceptor } from './auth.interceptor';
 import { AuthService } from '../services/auth.service';
@@ -18,7 +18,7 @@ describe('authInterceptor', () => {
     );
 
     await TestBed.runInInjectionContext(async () => {
-      await authInterceptor(req, next).toPromise();
+      await firstValueFrom(authInterceptor(req, next));
     });
 
     expect(next).toHaveBeenCalledTimes(1);
@@ -35,7 +35,7 @@ describe('authInterceptor', () => {
     const next = vi.fn((_r: HttpRequest<unknown>) => of(new HttpResponse({ status: 200 })));
 
     await TestBed.runInInjectionContext(async () => {
-      await authInterceptor(req, next).toPromise();
+      await firstValueFrom(authInterceptor(req, next));
     });
 
     const calledReq = next.mock.calls[0]?.[0] as HttpRequest<unknown>;
