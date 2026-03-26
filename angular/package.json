@@ -9,6 +9,9 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:ng": "ng test",
+    "e2e": "playwright test",
+    "e2e:ui": "playwright test --ui",
+    "e2e:head": "playwright test --headed",
     "lint": "ng lint",
     "format": "prettier --write \"src/**/*.{ts,html,css,scss,json}\" \"*.{json,md,js}\"",
     "format:check": "prettier --check \"src/**/*.{ts,html,css,scss,json}\" \"*.{json,md,js}\""
@@ -33,6 +36,7 @@
     "@angular/compiler-cli": "^21.2.0",
     "@angular/platform-browser-dynamic": "^21.2.0",
     "@eslint/js": "^10.0.1",
+    "@playwright/test": "^1.58.2",
     "@tailwindcss/postcss": "^4.1.12",
     "angular-eslint": "21.3.1",
     "eslint": "^10.0.3",
