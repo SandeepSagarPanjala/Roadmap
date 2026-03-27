@@ -34,6 +34,10 @@ jobs:
         run: pnpm run build --configuration production
         working-directory: ./angular
 
+      - name: Fix SPA Routing (Copy index.html to 404.html)
+        run: cp ./dist/angular/browser/index.html ./dist/angular/browser/404.html
+        working-directory: ./angular
+
       - name: Deploy Payload exactly to SandeepSagarPanjala.github.io
         uses: peaceiris/actions-gh-pages@v4
         with:
