@@ -1,0 +1,48 @@
+name: Deploy Angular (Cross-Repository)
+
+on:
+  push:
+    branches: ["main", "master", "develop"] 
+  workflow_dispatch: 
+
+concurrency:
+  group: "cross-repo-pages"
+  cancel-in-progress: false
+
+jobs:
+  build_and_deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 10
+
+      - name: Install Frontend Dependencies
+        run: pnpm install
+        working-directory: ./angular
+
+      - name: Build Application (Production Payload)
+        run: pnpm run build --configuration production
+        working-directory: ./angular
+
+      - name: Deploy Payload exactly to SandeepSagarPanjala.github.io
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          # This connects to the Personal Access Token you saved in the Roadmap Settings safely
+          personal_token: ${{ secrets.DEPLOY_PAT_TOKEN }}
+          # This is the physical destination where the code will be pushed
+          external_repository: SandeepSagarPanjala/SandeepSagarPanjala.github.io
+          # Commits strictly the output static files into the `develop` branch
+          publish_branch: develop
+          publish_dir: ./angular/dist/angular/browser
+          # This keeps the history in your portfolio repository completely clean and 1-commit deep!
+          force_orphan: true 
