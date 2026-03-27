@@ -25,6 +25,6 @@ export const routes: Routes = [
   },
   {
     path: '**',
-    redirectTo: 'login' // Global fallback redirects lost users to login securely
+    loadComponent: () => import('./pages/errors/not-found/not-found').then(c => c.NotFound)
   }
 ];
