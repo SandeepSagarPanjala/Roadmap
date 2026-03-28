@@ -43,7 +43,7 @@ export const login = async (req: Request, res: Response) => {
   });
 };
 
-export const refresh = (req: Request, res: Response) => {
+export const refresh = async (req: Request, res: Response) => {
   // Read the cookie directly from the invisible browser headers
   const token = req.cookies?.jwt;
 
@@ -51,7 +51,7 @@ export const refresh = (req: Request, res: Response) => {
     return res.status(401).json({ message: MESSAGES.AUTH.REFRESH_COOKIE_MISSING });
   }
 
-  const result = authService.verifyRefreshToken(token);
+  const result = await authService.verifyRefreshToken(token);
 
   if (!result.valid) {
     return res

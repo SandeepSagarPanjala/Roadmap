@@ -15,19 +15,18 @@ if (!ACCESS_TOKEN_SECRET || !REFRESH_TOKEN_SECRET) {
 }
 
 export const authenticateUser = async (username: string, password: string) => {
-  const user = userService.getUserByUsername(username);
+  const user = await userService.getUserByUsername(username);
 
-  if (!user || !user.password) {
+  if (!user || !user.passwordHash) {
     return null;
   }
 
-  // Real user object has password (from getUserByUsername which accesses the raw array)
-  // Wait, my getUserByUsername returns the object reference from the array, which has password!
-  const match = await bcrypt.compare(password, user.password);
+  // Real user object has passwordHash pulled from Drizzle Schema!
+  const match = await bcrypt.compare(password, user.passwordHash);
 
   if (match) {
-    // Exclude password from token payload
-    const { password: _, ...userWithoutPassword } = user;
+    // Exclude passwordHash from token payload
+    const { passwordHash: _, ...userWithoutPassword } = user;
     return userWithoutPassword;
   }
 
@@ -58,7 +57,7 @@ export const invalidateAllTokensForUser = (userId: number) => {
   }
 };
 
-export const verifyRefreshToken = (token: string) => {
+export const verifyRefreshToken = async (token: string) => {
   const tokenData = refreshTokensDB.get(token);
 
   if (!tokenData) {
@@ -73,8 +72,8 @@ export const verifyRefreshToken = (token: string) => {
 
   try {
     const payload = jwt.verify(token, REFRESH_TOKEN_SECRET as string) as jwt.JwtPayload;
-    // Return a payload we can use to generate new tokens
-    const user = userService.getUserById(payload.id as number);
+    // Database Call! Must await id!
+    const user = await userService.getUserById(payload.id as string);
     return { valid: true, user };
   } catch (err) {
     return { valid: false, user: null, message: MESSAGES.AUTH.INVALID_OR_EXPIRED_TOKEN };
