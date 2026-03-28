@@ -1,6 +1,5 @@
 import { ApolloServer } from '@apollo/server';
-// @ts-ignore
-import { expressMiddleware } from '@apollo/server/express4';
+import { expressMiddleware } from '@as-integrations/express5';
 import express from 'express';
 import { schema } from './schema.js';
 import jwt from 'jsonwebtoken';

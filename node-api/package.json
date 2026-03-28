@@ -19,6 +19,7 @@
   "description": "",
   "dependencies": {
     "@apollo/server": "^5.5.0",
+    "@as-integrations/express5": "^1.1.2",
     "@pothos/core": "^4.12.0",
     "@pothos/plugin-scope-auth": "^4.1.6",
     "@pothos/plugin-validation": "^4.2.0",
