@@ -1,6 +1,6 @@
 import "dotenv/config";
 import { describe, it, expect } from "vitest";
-import * as authService from "./authService.js";
+import * as authService from "../../src/services/authService.js";
 
 describe("authService", () => {
   it("authenticateUser should securely return null for incorrect passwords", async () => {

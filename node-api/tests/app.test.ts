@@ -1,6 +1,13 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
+
+// Vitest currently struggles natively with resolving Apollo's inner ESM export graph safely.
+// We strictly mock Apollo Server out entirely before importing the Express App so it tests pure Express logic cleanly!
+vi.mock('../src/graphql/apolloServer.js', () => ({
+  startApolloServer: vi.fn(),
+}));
+
 import request from "supertest";
-import { app } from "./app.js"; // Import the Express App (without starting the server!)
+import { app } from "../index.js"; 
 
 describe("App Health Check", () => {
   it("GET / should return WELCOME TO NODE API", async () => {
@@ -9,7 +16,7 @@ describe("App Health Check", () => {
     
     // Vitest assertions
     expect(response.status).toBe(200);
-    expect(response.text).toBe("WELCOME TO NODE API");
+    expect(response.text).toBe("WELCOME TO NODE API - POWERED ENTIRELY BY GRAPHQL!");
   });
 
   it("GET /non-existent-route should return 404 JSON", async () => {

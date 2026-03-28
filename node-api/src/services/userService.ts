@@ -63,15 +63,14 @@ export const getUserByUsername = async (username: string, requestedFields?: stri
   return result[0] || null;
 };
 
-export const addUser = async (displayName: string | null, username: string, passwordHash: string, email: string) => {
-  // Map arguments exactly to Postgres strict columns and execute Insertion
-  const result = await db.insert(users).values({
-    displayName,
-    username,
-    passwordHash,
-    email
-  }).returning();
+export type UserInsertType = typeof users.$inferInsert;
+
+export const addUser = async (userData: UserInsertType) => {
+  // Map arguments strictly to Postgres columns using inferInsert
+  const result = await db.insert(users).values(userData).returning();
   
+  // Destructure to permanently strip the passwordHash before returning back down
   const { passwordHash: _, ...userWithoutPassword } = result[0];
+  
   return userWithoutPassword;
 };
