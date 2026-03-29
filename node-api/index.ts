@@ -1,7 +1,10 @@
 import "dotenv/config";
 import express from "express";
-import { applyGlobalMiddlewares } from "./src/middlewares/setup.js";
-import { notFoundMiddleware, globalErrorMiddleware } from "./src/middlewares/errorHandler.js";
+import { applyMiddlewares } from "./src/middlewares/setup.js";
+import {
+  notFoundMiddleware,
+  globalErrorMiddleware,
+} from "./src/middlewares/errorHandler.js";
 import { startApolloServer } from "./src/graphql/apolloServer.js";
 
 // Exported explicitly for Supertest/Vitest architecture seamlessly without port collision!
@@ -10,7 +13,7 @@ const port = process.env.PORT || 3000;
 
 const startServer = async () => {
   // 1. Apply all global configuration/middlewares in one elegant sweep!
-  applyGlobalMiddlewares(app);
+  applyMiddlewares(app);
 
   // 2. Root healthcheck endpoint
   app.get("/", (req, res) => {
@@ -29,8 +32,12 @@ const startServer = async () => {
   // 6. Physically boot the listener exactly once!
   app.listen(port, () => {
     console.log(`🚀 Base Server is running on port ${port}`);
-    console.log(`🚀 GraphQL API perfectly live at http://localhost:${port}/graphql`);
+    console.log(
+      `🚀 GraphQL API perfectly live at http://localhost:${port}/graphql`,
+    );
   });
 };
 
-startServer().catch((err) => console.error("Critical Failure Booting Server:", err));
+startServer().catch((err) =>
+  console.error("Critical Failure Booting Server:", err),
+);

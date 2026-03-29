@@ -1,5 +1,5 @@
-import { db } from '../db/connection.js';
-import { exoplanets } from '../db/schema.js';
+import { db } from "../db/connection.js";
+import { exoplanets } from "../db/schema.js";
 
 export const getAllExoplanets = async (requestedFields?: string[]) => {
   // 1. Fallback for Legacy/Internal Server Calls
@@ -9,9 +9,10 @@ export const getAllExoplanets = async (requestedFields?: string[]) => {
 
   // 2. The Drizzle AST Optimizer
   const perfectlyOptimizedQuery: any = {};
-  
+
   requestedFields.forEach((field) => {
-    if (field in exoplanets) perfectlyOptimizedQuery[field] = (exoplanets as any)[field];
+    if (field in exoplanets)
+      perfectlyOptimizedQuery[field] = (exoplanets as any)[field];
   });
 
   // 3. Executes beautifully pruned SQL!
@@ -22,9 +23,9 @@ export const getAllExoplanets = async (requestedFields?: string[]) => {
 type ExoplanetInsertType = typeof exoplanets.$inferInsert;
 
 export const addExoplanet = async (exoplanetData: ExoplanetInsertType) => {
-  // Gracefully handles Postgres UUID generation natively! 
+  // Gracefully handles Postgres UUID generation natively!
   // `.returning()` guarantees we instantly get the exact new Database row back!
   const result = await db.insert(exoplanets).values(exoplanetData).returning();
-  
+
   return result[0];
 };

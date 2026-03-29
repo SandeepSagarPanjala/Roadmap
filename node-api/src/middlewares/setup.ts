@@ -2,20 +2,22 @@ import express from "express";
 import cors from "cors";
 import helmet from "helmet";
 import rateLimit from "express-rate-limit";
-import morgan from "morgan";
 import compression from "compression";
 import cookieParser from "cookie-parser";
 import { MESSAGES } from "../constants/messages.js";
+import morgan from "morgan";
 
-export const applyGlobalMiddlewares = (app: express.Application) => {
-  // HTTP request logger middleware
+export const applyMiddlewares = (app: express.Application) => {
   const isProduction = process.env.NODE_ENV === "production";
+
+  // HTTP request logging with Morgan. In production, use the 'combined' format for detailed logs; in development, use 'dev' for concise output.
   app.use(morgan(isProduction ? "combined" : "dev"));
 
   // Helmet helps secure your Node.js application by setting various HTTP headers.
   app.use(
     helmet({
       crossOriginResourcePolicy: { policy: "cross-origin" },
+      contentSecurityPolicy: isProduction ? undefined : false,
     }),
   );
 
@@ -33,14 +35,15 @@ export const applyGlobalMiddlewares = (app: express.Application) => {
   app.use(limiter);
 
   // Enable Cross-Origin requests decoupled completely from hardcoded domains
-  const allowedOrigins = process.env.ALLOWED_ORIGINS 
-    ? process.env.ALLOWED_ORIGINS.split(",") 
+  const allowedOrigins = process.env.ALLOWED_ORIGINS
+    ? process.env.ALLOWED_ORIGINS.split(",")
     : ["http://localhost:4200"];
-
-  app.use(cors({
-    origin: allowedOrigins,
-    credentials: true // Crucial for HttpOnly Cookies!
-  }));
+  app.use(
+    cors({
+      origin: allowedOrigins,
+      credentials: true, // Crucial for HttpOnly Cookies!
+    }),
+  );
 
   // Parse HttpOnly Cookies
   app.use(cookieParser());

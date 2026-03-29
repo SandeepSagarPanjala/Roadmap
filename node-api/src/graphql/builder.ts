@@ -15,9 +15,10 @@ export const builder = new SchemaBuilder<{
   };
 }>({
   plugins: [ScopeAuthPlugin, ValidationPlugin],
-  // @ts-ignore - Explicitly silencing SchemaBuilder plugin merging bugs
-  authScopes: async (context) => ({
-    // This executes on every request and perfectly binds 'auth' to whether extracting JWT succeeded!
-    auth: !!context.user,
-  }),
+  scopeAuth: {
+    authScopes: async (context) => ({
+      // This executes on every request and perfectly binds 'auth' to whether extracting JWT succeeded!
+      auth: !!context.user,
+    }),
+  }
 });
