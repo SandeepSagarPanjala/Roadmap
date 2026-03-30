@@ -7,7 +7,10 @@ import {
   RefreshSessionGQL, 
   LogoutUserGQL,
   LoginUserMutationVariables,
-  LoginUserMutation
+  LoginUserMutation,
+  AddUserGQL,
+  AddUserMutationVariables,
+  AddUserMutation
 } from './auth.generated';
 
 export interface Tokens {
@@ -24,6 +27,7 @@ export class AuthService {
   private readonly loginGQL = inject(LoginUserGQL);
   private readonly refreshGQL = inject(RefreshSessionGQL);
   private readonly logoutGQL = inject(LogoutUserGQL);
+  private readonly addUserGQL = inject(AddUserGQL);
   
   // Reactive UI tracking: automatically updates if logged in state changes
   public readonly isAuthenticated = signal<boolean>(!!this.getAccessToken());
@@ -86,5 +90,11 @@ export class AuthService {
   private executeLogout(): void {
     this.clearTokens();
     this.router.navigate(['/login']);
+  }
+
+  register(variables: AddUserMutationVariables): Observable<AddUserMutation['addUser']> {
+    return this.addUserGQL.mutate({ variables }).pipe(
+      map(res => res.data?.addUser)
+    );
   }
 }

@@ -1,25 +1,34 @@
 import { Component, inject, signal } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import { CommonModule } from '@angular/common';
 import { Messages } from '../../../core/constants/messages.constants';
-import { AddUserGQL } from '../../../core/services/auth/auth.generated';
+import { AuthService } from '../../../core/services/auth/auth.service';
+import { AddUserMutationVariables } from '../../../core/services/auth/auth.generated';
 
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [ReactiveFormsModule, RouterLink, CommonModule],
+  imports: [ReactiveFormsModule, RouterLink],
   templateUrl: './register.component.html',
 })
 export class RegisterComponent {
-  private fb = inject(FormBuilder);
-  private addUserGQL = inject(AddUserGQL);
+  private authService = inject(AuthService);
   private router = inject(Router);
 
-  registerForm = this.fb.group({
-    username: ['', [Validators.required, Validators.minLength(3)]],
-    email: ['', [Validators.required, Validators.email]],
-    password: ['', [Validators.required, Validators.minLength(6)]],
+  // 🛡️ LEVEL 1: Strongly Typed Forms ensure we never send malformed data to GraphQL!
+  registerForm = new FormGroup({
+    username: new FormControl('', { 
+      nonNullable: true, 
+      validators: [Validators.required, Validators.minLength(3)] 
+    }),
+    email: new FormControl('', { 
+      nonNullable: true, 
+      validators: [Validators.required, Validators.email] 
+    }),
+    password: new FormControl('', { 
+      nonNullable: true, 
+      validators: [Validators.required, Validators.minLength(6)] 
+    }),
   });
 
   isLoading = signal(false);
@@ -30,25 +39,24 @@ export class RegisterComponent {
       this.isLoading.set(true);
       this.error.set(null);
 
-      const formValue = this.registerForm.value;
+      // No more "as any" casting! The types flow perfectly from Form to Service.
+      const variables: AddUserMutationVariables = this.registerForm.getRawValue();
 
-      this.addUserGQL.mutate({
-        variables: {
-          username: formValue.username as string,
-          email: formValue.email as string,
-          password: formValue.password as string
-        }
-      }).subscribe({
+      this.authService.register(variables).subscribe({
         next: () => {
           this.router.navigate(['/login']);
         },
         error: (err) => {
           this.isLoading.set(false);
-          this.error.set(
-            err.message || Messages.Auth.RegistrationFailed,
-          );
+          this.error.set(err.message || Messages.Auth.RegistrationFailed);
         },
       });
     }
+  }
+
+  // Helper for UI validation feedback
+  isInvalid(controlName: keyof typeof this.registerForm.controls): boolean {
+    const control = this.registerForm.get(controlName);
+    return !!(control && control.invalid && (control.dirty || control.touched));
   }
 }
