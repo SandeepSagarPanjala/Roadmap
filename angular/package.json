@@ -14,7 +14,8 @@
     "e2e:head": "playwright test --headed",
     "lint": "ng lint",
     "format": "prettier --write \"src/**/*.{ts,html,css,scss,json}\" \"*.{json,md,js}\"",
-    "format:check": "prettier --check \"src/**/*.{ts,html,css,scss,json}\" \"*.{json,md,js}\""
+    "format:check": "prettier --check \"src/**/*.{ts,html,css,scss,json}\" \"*.{json,md,js}\"",
+    "generate": "graphql-codegen"
   },
   "private": true,
   "packageManager": "pnpm@10.32.1",
@@ -25,6 +26,9 @@
     "@angular/forms": "^21.2.0",
     "@angular/platform-browser": "^21.2.0",
     "@angular/router": "^21.2.0",
+    "@apollo/client": "^4.1.6",
+    "apollo-angular": "^13.0.0",
+    "graphql": "^16.13.2",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0"
   },
@@ -36,6 +40,10 @@
     "@angular/compiler-cli": "^21.2.0",
     "@angular/platform-browser-dynamic": "^21.2.0",
     "@eslint/js": "^10.0.1",
+    "@graphql-codegen/cli": "^6.2.1",
+    "@graphql-codegen/typescript": "^5.0.9",
+    "@graphql-codegen/typescript-apollo-angular": "^5.0.0",
+    "@graphql-codegen/typescript-operations": "^5.0.9",
     "@playwright/test": "^1.58.2",
     "@tailwindcss/postcss": "^4.1.12",
     "angular-eslint": "21.3.1",

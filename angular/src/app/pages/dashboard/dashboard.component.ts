@@ -1,8 +1,8 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../core/services/auth.service';
-import { ApiRoutes } from '../../core/constants/api.constants';
+import { ExoplanetService } from '../../core/services/exoplanet.service';
+import { Exoplanet } from '../../core/graphql/generated';
 
 @Component({
   selector: 'app-dashboard',
@@ -10,15 +10,28 @@ import { ApiRoutes } from '../../core/constants/api.constants';
   imports: [CommonModule],
   templateUrl: './dashboard.component.html',
 })
-export class DashboardComponent {
+export class DashboardComponent implements OnInit {
   private authService = inject(AuthService);
-  private http = inject(HttpClient);
+  private exoplanetService = inject(ExoplanetService);
 
-  testSecureApi() {
-    console.log("🚀 Firing Secure Request to /users...");
-    this.http.get(ApiRoutes.Users.GetAll).subscribe({
-      next: (res) => console.log("✅ Success! Node Backend Returned:", res),
-      error: (err) => console.error("❌ Failed API Call", err)
+  public readonly exoplanets = signal<Exoplanet[]>([]);
+  public readonly loading = signal<boolean>(true);
+
+  ngOnInit() {
+    this.refreshData();
+  }
+
+  refreshData() {
+    this.loading.set(true);
+    this.exoplanetService.getAllExoplanets().subscribe({
+      next: (data) => {
+        this.exoplanets.set(data);
+        this.loading.set(false);
+      },
+      error: (err) => {
+        console.error("❌ Failed to fetch Exoplanets via GraphQL CodeGen API", err);
+        this.loading.set(false);
+      }
     });
   }
 

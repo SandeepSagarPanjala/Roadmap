@@ -3,6 +3,7 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 import { Messages } from '../../../core/constants/messages.constants';
+import { LoginUserMutationVariables } from '../../../core/graphql/generated';
 
 @Component({
   selector: 'app-login',
@@ -35,11 +36,12 @@ export class LoginComponent {
     if (this.loginForm.valid) {
       this.isLoading.set(true);
       this.error.set(null);
-      this.authService.login(this.loginForm.value).subscribe({
+      const credentials = this.loginForm.value as LoginUserMutationVariables;
+      this.authService.login(credentials).subscribe({
         next: () => this.router.navigate(['/dashboard']),
         error: (err) => {
           this.isLoading.set(false);
-          this.error.set(err.error?.message || Messages.Auth.LoginFailed);
+          this.error.set(err.message || Messages.Auth.LoginFailed);
         }
       });
     }

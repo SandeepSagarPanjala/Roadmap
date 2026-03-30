@@ -1,10 +1,9 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
-import { ApiRoutes } from '../../../core/constants/api.constants';
 import { Messages } from '../../../core/constants/messages.constants';
+import { AddUserGQL } from '../../../core/graphql/generated';
 
 @Component({
   selector: 'app-register',
@@ -14,12 +13,13 @@ import { Messages } from '../../../core/constants/messages.constants';
 })
 export class RegisterComponent {
   private fb = inject(FormBuilder);
-  private http = inject(HttpClient);
+  private addUserGQL = inject(AddUserGQL);
   private router = inject(Router);
 
   registerForm = this.fb.group({
-    username: ['', Validators.required],
-    password: ['', Validators.required],
+    username: ['', [Validators.required, Validators.minLength(3)]],
+    email: ['', [Validators.required, Validators.email]],
+    password: ['', [Validators.required, Validators.minLength(6)]],
   });
 
   isLoading = signal(false);
@@ -30,15 +30,22 @@ export class RegisterComponent {
       this.isLoading.set(true);
       this.error.set(null);
 
-      // Hit Node API directly for registration since authService handles login/refresh
-      this.http.post(ApiRoutes.Users.Add, this.registerForm.value).subscribe({
+      const formValue = this.registerForm.value;
+
+      this.addUserGQL.mutate({
+        variables: {
+          username: formValue.username as string,
+          email: formValue.email as string,
+          password: formValue.password as string
+        }
+      }).subscribe({
         next: () => {
           this.router.navigate(['/login']);
         },
         error: (err) => {
           this.isLoading.set(false);
           this.error.set(
-            err.error?.message || Messages.Auth.RegistrationFailed,
+            err.message || Messages.Auth.RegistrationFailed,
           );
         },
       });

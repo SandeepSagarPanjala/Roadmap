@@ -30,78 +30,117 @@
   <!-- Main Content Container -->
   <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
     <!-- Welcome Card -->
-    <div
-      class="md:col-span-2 bg-linear-to-br from-indigo-600 to-purple-700 rounded-3xl p-8 relative overflow-hidden shadow-[0_0_40px_rgba(79,70,229,0.2)]"
-    >
-      <!-- Glass overlay decorations -->
+    <div class="md:col-span-2 bg-linear-to-br from-indigo-600 to-purple-700 rounded-3xl p-8 relative overflow-hidden shadow-[0_0_40px_rgba(79,70,229,0.2)]">
       <div class="absolute inset-0 bg-white/5 backdrop-blur-3xl z-0"></div>
-      <div
-        class="absolute -right-20 -top-20 w-64 h-64 bg-purple-500 rounded-full mix-blend-screen filter blur-3xl opacity-50 z-0"
-      ></div>
+      <div class="absolute -right-20 -top-20 w-64 h-64 bg-purple-500 rounded-full mix-blend-screen filter blur-3xl opacity-50 z-0"></div>
 
       <div class="relative z-10">
-        <h1 class="text-4xl font-extrabold text-white mb-2">Secure Dashboard</h1>
+        <h1 class="text-4xl font-extrabold text-white mb-2">Solar Fleet Command</h1>
         <p class="text-indigo-100 mb-8 max-w-md">
-          You have successfully bypassed the 401 Interceptors and are actively using a perfectly
-          rotated JSON Web Token.
+          Successfully deep-linked to the Auto-Generated Pothos GQL SDK.
+          Currently monitoring active deep-space data streams across the galaxy.
         </p>
 
-        <button 
-          (click)="testSecureApi()"
-          class="mb-6 px-6 py-3 rounded-xl font-bold text-white bg-indigo-500/20 border border-indigo-400/30 hover:bg-indigo-500/40 transition-all duration-300 shadow-[0_0_15px_rgba(99,102,241,0.2)]"
-        >
-          🚀 Test Protected API Route (/api/users)
-        </button>
-        <br>
-
-        <div
-          class="bg-slate-900/40 backdrop-blur-md rounded-2xl p-4 border border-white/10 inline-block"
-        >
+        <div class="bg-slate-900/40 backdrop-blur-md rounded-2xl p-4 border border-white/10 inline-block">
           <div class="flex items-center gap-3 text-sm text-white">
             <span class="flex h-3 w-3 relative">
-              <span
-                class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"
-              ></span>
+              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
               <span class="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
             </span>
-            Session Active & Encrypted
+            Apollo Data Stream Active (Typesafe)
           </div>
         </div>
       </div>
     </div>
 
     <!-- Token Status Widget -->
-    <div
-      class="bg-slate-900/50 backdrop-blur-xl border border-slate-800 rounded-3xl p-6 shadow-xl"
-    >
+    <div class="bg-slate-900/50 backdrop-blur-xl border border-slate-800 rounded-3xl p-6 shadow-xl">
       <h3 class="text-white font-bold text-lg mb-6 flex items-center gap-2">
-        <svg
-          class="w-5 h-5 text-indigo-400"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
-          />
+        <svg class="w-5 h-5 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
         </svg>
         Security Status
       </h3>
-
       <div class="space-y-4">
         <div class="bg-slate-800/50 rounded-xl p-4 border border-slate-700">
           <div class="text-xs text-slate-400 uppercase tracking-wider mb-1">Access Token</div>
-          <div class="text-emerald-400 font-mono text-sm truncate">Ready</div>
+          <div class="text-emerald-400 font-mono text-sm truncate">Authenticated & Ready</div>
         </div>
-
         <div class="bg-slate-800/50 rounded-xl p-4 border border-slate-700">
-          <div class="text-xs text-slate-400 uppercase tracking-wider mb-1">Refresh Token</div>
-          <div class="text-blue-400 font-mono text-sm truncate">Rotating automatically</div>
+          <div class="text-xs text-slate-400 uppercase tracking-wider mb-1">Session Data</div>
+          <div class="text-blue-400 font-mono text-sm truncate">Secured via HttpOnly Cookie</div>
         </div>
       </div>
+    </div>
+  </div>
+
+  <!-- Planet Discovery Grid (The Main Feature!) -->
+  <div class="mt-12">
+    <div class="flex items-center justify-between mb-8">
+      <h2 class="text-2xl font-bold text-white flex items-center gap-3">
+        <span class="p-2 bg-indigo-500/20 rounded-lg text-indigo-400">🌍</span>
+        Discovered Exoplanets
+      </h2>
+      <button 
+        (click)="refreshData()"
+        class="text-sm font-semibold text-indigo-400 hover:text-white transition-colors flex items-center gap-2"
+        [disabled]="loading()"
+      >
+        <svg class="w-4 h-4" [class.animate-spin]="loading()" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+        </svg>
+        Refresh Stream
+      </button>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="loading()" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div *ngFor="let i of [1,2,3,4]" class="bg-slate-900/50 border border-slate-800 rounded-2xl h-64 animate-pulse"></div>
+    </div>
+
+    <!-- Data Grid -->
+    <div *ngIf="!loading()" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div 
+        *ngFor="let planet of exoplanets()" 
+        class="group bg-slate-900/50 backdrop-blur-xl border border-slate-800 rounded-3xl overflow-hidden hover:border-indigo-500/50 transition-all duration-500 shadow-xl"
+      >
+        <div class="h-40 relative overflow-hidden">
+          <img 
+            [src]="planet.imageUrl || 'https://images.unsplash.com/photo-1614728894747-a83421e2b9c9?q=80&w=600&auto=format&fit=crop'" 
+            class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" 
+            alt="Planet Image"
+          >
+          <div class="absolute inset-0 bg-linear-to-t from-slate-900/80 to-transparent"></div>
+          <div class="absolute bottom-3 left-4">
+            <span class="px-2 py-1 bg-indigo-500/80 text-[10px] font-bold text-white rounded uppercase tracking-widest backdrop-blur-sm">
+              NEW DISCOVERY
+            </span>
+          </div>
+        </div>
+        
+        <div class="p-5">
+          <h3 class="text-white font-bold text-lg mb-1">{{ planet.name }}</h3>
+          <p class="text-slate-500 text-xs mb-4 font-mono">{{ planet.scientificName || 'Unclassified' }}</p>
+          
+          <div class="space-y-2">
+            <div class="flex items-center justify-between text-[11px]">
+              <span class="text-slate-400">Solar System</span>
+              <span class="text-indigo-300">{{ planet.solarSystemName || 'Deep Space' }}</span>
+            </div>
+            <div class="flex items-center justify-between text-[11px]">
+              <span class="text-slate-400">Distance</span>
+              <span class="text-emerald-400">{{ planet.distanceFromEarthLy || '???' }} LY</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="!loading() && exoplanets().length === 0" class="bg-slate-900/30 border-2 border-dashed border-slate-800 rounded-3xl p-12 text-center">
+      <div class="text-slate-600 text-4xl mb-4">🌌</div>
+      <h3 class="text-white font-bold text-xl mb-2">No Planets Found</h3>
+      <p class="text-slate-400">Our deep space sensors haven't detected any anomalous data in this sector yet.</p>
     </div>
   </div>
 </div>

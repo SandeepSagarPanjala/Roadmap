@@ -1,0 +1,12 @@
+query GetAllExoplanets {
+  getAllExoplanets {
+    id
+    name
+    scientificName
+    imageUrl
+    discoveredOn
+    discoveredBy
+    distanceFromEarthLy
+    solarSystemName
+  }
+}
