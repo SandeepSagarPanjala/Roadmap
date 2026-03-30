@@ -4,8 +4,10 @@ import helmet from "helmet";
 import rateLimit from "express-rate-limit";
 import compression from "compression";
 import cookieParser from "cookie-parser";
-import { MESSAGES } from "../constants/messages.js";
+import { MESSAGES } from "../constants/messages";
 import morgan from "morgan";
+import { redisInstance } from "../services/redisService";
+import { RedisStore } from "rate-limit-redis";
 
 export const applyMiddlewares = (app: express.Application) => {
   const isProduction = process.env.NODE_ENV === "production";
@@ -21,12 +23,19 @@ export const applyMiddlewares = (app: express.Application) => {
     }),
   );
 
-  // Apply rate limiting middleware to all requests.
+  // Apply Rate Limiting (Industry best practice: Shared Redis for Scale, Memory for Local)
+  const isRedisEnabled = process.env.REDIS_ENABLED === "true";
   const limiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutes
-    limit: 100, // Limit each IP to 100 requests per window
+    windowMs: 15 * 60 * 1000, 
+    limit: 100,
     standardHeaders: "draft-8",
     legacyHeaders: false,
+    // 🛡️ Failover: Use Redis for scaling, but fall back to memory if the Kill Switch is active!
+    store: isRedisEnabled 
+      ? new RedisStore({
+          sendCommand: (...args: string[]) => redisInstance.call(...args),
+        }) 
+      : undefined, 
     message: {
       status: 429,
       message: MESSAGES.RATE_LIMIT.TOO_MANY_REQUESTS,

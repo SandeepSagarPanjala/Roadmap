@@ -1,7 +1,7 @@
-import { builder } from '../builder.js';
-import { authenticateUser, generateAccessToken, generateRefreshToken, verifyRefreshToken, markTokenAsUsed, removeRefreshToken } from '../../services/authService.js';
-import { UserObject, UserType } from './User.js';
-import { MESSAGES } from '../../constants/messages.js';
+import { builder } from '../builder';
+import { authenticateUser, generateAccessToken, generateRefreshToken, verifyRefreshToken, markTokenAsUsed, removeRefreshToken } from '../../services/authService';
+import { UserObject, UserType } from './User';
+import { MESSAGES } from '../../constants/messages';
 import ms from 'ms';
 
 // 1. We create a beautiful Custom Interface returning BOTH a token and a full User simultaneously!

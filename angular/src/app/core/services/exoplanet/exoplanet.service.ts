@@ -15,7 +15,7 @@ export class ExoplanetService {
    */
   getAllExoplanets(): Observable<Exoplanet[]> {
     return this.getAllGQL.watch().valueChanges.pipe(
-      map(result => (result.data?.getAllExoplanets as Exoplanet[]) || [])
+      map(result => (result.data?.exoplanets as Exoplanet[]) || [])
     );
   }
 }

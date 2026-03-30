@@ -70,13 +70,13 @@ export type MutationLoginUserArgs = {
 
 export type Query = {
   __typename?: 'Query';
-  getAllExoplanets?: Maybe<Array<Exoplanet>>;
-  getAllUsers?: Maybe<Array<User>>;
-  getUserByUsername?: Maybe<User>;
+  exoplanets?: Maybe<Array<Exoplanet>>;
+  user?: Maybe<User>;
+  users?: Maybe<Array<User>>;
 };
 
 
-export type QueryGetUserByUsernameArgs = {
+export type QueryUserArgs = {
   username: Scalars['String']['input'];
 };
 

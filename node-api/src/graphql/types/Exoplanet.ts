@@ -1,10 +1,13 @@
-import { builder } from "../builder.js";
-import { exoplanets } from "../../db/schema.js";
+import { builder } from "../builder";
+import { exoplanets } from "../../db/schema";
 import {
   getAllExoplanets,
   addExoplanet,
-} from "../../services/exoplanetService.js";
-import { FieldNode, GraphQLResolveInfo } from "graphql";
+} from "../../services/exoplanetService";
+import { GraphQLResolveInfo } from "graphql";
+import { z } from "zod";
+import { VALIDATION_MESSAGES } from "../../constants/messages";
+import { CACHE_KEYS } from "../../constants/cacheKeys";
 
 export type ExoplanetType = typeof exoplanets.$inferSelect;
 
@@ -29,26 +32,28 @@ export const ExoplanetObject = builder
 
 // 2. Attach Resolvers
 builder.queryFields((t) => ({
-  getAllExoplanets: t.field({
+  exoplanets: t.field({
     type: [ExoplanetObject],
-    authScopes: { auth: true }, // Explicitly forcing the Developer to acknowledge this is locked down
+    authScopes: { auth: true },
     resolve: async (parent, args, ctx, info: GraphQLResolveInfo) => {
-      // FOR THE LOVE OF OPTIMIZATION!
-      const requestedFields =
-        info.fieldNodes[0]?.selectionSet?.selections
-          ?.filter(
-            (selection): selection is FieldNode => selection.kind === "Field",
-          )
-          .map((selection) => selection.name.value) || [];
+      // 🚀 The industry standard for speed: Redis Caching!
+      const CACHE_KEY = CACHE_KEYS.EXOPLANETS.ALL;
+      
+      const cachedPlanets = await ctx.redis.get<ExoplanetType[]>(CACHE_KEY);
+      if (cachedPlanets) {
+        console.log(`[REDIS] Cache Hit for ${CACHE_KEY}`);
+        return cachedPlanets;
+      }
 
-      const planets = await getAllExoplanets(requestedFields);
+      const planets = await getAllExoplanets();
+
+      await ctx.redis.set(CACHE_KEY, planets, 3600);
+      console.log(`[REDIS] Cache Miss. Populated ${CACHE_KEY}.`);
+
       return planets as ExoplanetType[];
     },
   }),
 }));
-
-import { z } from "zod";
-import { VALIDATION_MESSAGES } from "../../constants/messages.js";
 
 // 3. Attach Mutations (Creating New Data)
 builder.mutationFields((t) => ({
@@ -62,16 +67,12 @@ builder.mutationFields((t) => ({
       scientificName: t.arg.string({ required: false }),
       imageUrl: t.arg.string({
         required: false,
-        validate: z
-          .string()
-          .url(VALIDATION_MESSAGES.EXOPLANET.URL_INVALID)
-          .optional(),
+        validate: z.url(VALIDATION_MESSAGES.EXOPLANET.URL_INVALID).optional(),
       }),
       discoveredOn: t.arg.string({ required: false }),
       discoveredBy: t.arg.string({ required: false }),
       distanceFromEarthLy: t.arg.string({
         required: false,
-        // Proving Regex protection explicitly blocks alphanumeric hacks instantly
         validate: z
           .string()
           .regex(
@@ -84,14 +85,12 @@ builder.mutationFields((t) => ({
       leadResearcherId: t.arg.string({
         required: false,
         validate: z
-          .string()
           .uuid(VALIDATION_MESSAGES.EXOPLANET.RESEARCHER_ID_INVALID)
           .optional(),
       }),
     },
-    authScopes: { auth: true }, // Mathematically restricts any unauthenticated inserts globally!
+    authScopes: { auth: true },
     resolve: async (parent, args, ctx) => {
-      // Hands the strictly-typed arguments directly to the Drizzle Chef!
       const newPlanet = await addExoplanet({
         name: args.name,
         scientificName: args.scientificName,
@@ -102,6 +101,11 @@ builder.mutationFields((t) => ({
         solarSystemName: args.solarSystemName,
         leadResearcherId: args.leadResearcherId,
       });
+
+      // 🛡️ Safe Invalidation via the corrected factory key
+      await ctx.redis.del(CACHE_KEYS.EXOPLANETS.ALL);
+      console.log(`[REDIS] Invalidated ${CACHE_KEYS.EXOPLANETS.ALL}`);
+
       return newPlanet;
     },
   }),

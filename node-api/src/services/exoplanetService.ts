@@ -1,5 +1,5 @@
-import { db } from "../db/connection.js";
-import { exoplanets } from "../db/schema.js";
+import { db } from "../db/connection";
+import { exoplanets } from "../db/schema";
 
 export const getAllExoplanets = async (requestedFields?: string[]) => {
   // 1. Fallback for Legacy/Internal Server Calls

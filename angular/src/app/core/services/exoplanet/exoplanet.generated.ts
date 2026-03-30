@@ -6,16 +6,16 @@ import * as Apollo from 'apollo-angular';
 export type GetAllExoplanetsQueryVariables = Types.Exact<{ [key: string]: never; }>;
 
 
-export type GetAllExoplanetsQuery = { __typename?: 'Query', getAllExoplanets?: Array<{ __typename?: 'Exoplanet', id?: string | null, name?: string | null, scientificName?: string | null, imageUrl?: string | null, discoveredOn?: string | null, discoveredBy?: string | null, distanceFromEarthLy?: string | null, solarSystemName?: string | null }> | null };
+export type GetAllExoplanetsQuery = { __typename?: 'Query', exoplanets?: Array<{ __typename?: 'Exoplanet', id?: string | null, name?: string | null, scientificName?: string | null, imageUrl?: string | null, discoveredOn?: string | null, discoveredBy?: string | null, distanceFromEarthLy?: string | null, solarSystemName?: string | null }> | null };
 
 export type GetExoplanetsDashboardQueryVariables = Types.Exact<{ [key: string]: never; }>;
 
 
-export type GetExoplanetsDashboardQuery = { __typename?: 'Query', getAllExoplanets?: Array<{ __typename?: 'Exoplanet', id?: string | null, name?: string | null, imageUrl?: string | null }> | null };
+export type GetExoplanetsDashboardQuery = { __typename?: 'Query', exoplanets?: Array<{ __typename?: 'Exoplanet', id?: string | null, name?: string | null, imageUrl?: string | null }> | null };
 
 export const GetAllExoplanetsDocument = gql`
     query GetAllExoplanets {
-  getAllExoplanets {
+  exoplanets {
     id
     name
     scientificName
@@ -40,7 +40,7 @@ export const GetAllExoplanetsDocument = gql`
   }
 export const GetExoplanetsDashboardDocument = gql`
     query GetExoplanetsDashboard {
-  getAllExoplanets {
+  exoplanets {
     id
     name
     imageUrl

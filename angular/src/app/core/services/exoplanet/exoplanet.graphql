@@ -1,5 +1,5 @@
 query GetAllExoplanets {
-  getAllExoplanets {
+  exoplanets {
     id
     name
     scientificName
@@ -12,7 +12,7 @@ query GetAllExoplanets {
 }
 
 query GetExoplanetsDashboard {
-  getAllExoplanets {
+  exoplanets {
     id
     name
     imageUrl

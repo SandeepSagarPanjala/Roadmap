@@ -1,4 +1,4 @@
-import { builder } from './builder.js';
+import { builder } from './builder';
 
 // 1. We must declare the 'root' Query strictly ONCE in a massive application.
 builder.queryType({});
@@ -7,10 +7,10 @@ builder.queryType({});
 builder.mutationType({});
 
 // 2. We import all of the separated files so Pothos physically registers them!
-import './types/User.js';
-import './types/Exoplanet.js';
-import './types/Auth.js';
-// import './types/Comments.js'; // Imagine importing 100 files here easily!
+import './types/User';
+import './types/Exoplanet';
+import './types/Auth';
+// import './types/Comments'; // Imagine importing 100 files here easily!
 
 // 3. We let Pothos compile the entire global application into one massive RAM map.
 export const schema = builder.toSchema();

@@ -1,10 +1,10 @@
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import ms from "ms";
-import * as userService from "./userService.js";
-import { MESSAGES } from "../constants/messages.js";
-import { db } from "../db/connection.js";
-import { refreshTokens } from "../db/schema.js";
+import * as userService from "./userService";
+import { MESSAGES } from "../constants/messages";
+import { db } from "../db/connection";
+import { refreshTokens } from "../db/schema";
 import { eq } from "drizzle-orm";
 
 const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET;

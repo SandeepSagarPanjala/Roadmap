@@ -2,8 +2,9 @@ import SchemaBuilder from '@pothos/core';
 import ValidationPlugin from '@pothos/plugin-validation';
 import ScopeAuthPlugin from '@pothos/plugin-scope-auth';
 import { Request, Response } from 'express';
-import { GraphQLError } from 'graphql';
-import { MESSAGES } from '../constants/messages.js';
+import { SmartRedis } from "../services/redisService";
+import { GraphQLError } from "graphql";
+import { MESSAGES } from "../constants/messages";
 
 // We register exactly ONE instance of the Validation engine globally!
 export const builder = new SchemaBuilder<{
@@ -11,6 +12,7 @@ export const builder = new SchemaBuilder<{
     req: Request; 
     res: Response;
     user?: any;
+    redis: SmartRedis;
     isTokenExpired?: boolean;
   };
   AuthScopes: {

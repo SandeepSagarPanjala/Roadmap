@@ -1,9 +1,10 @@
 import { ApolloServer } from "@apollo/server";
 import { expressMiddleware } from "@as-integrations/express5";
 import express from "express";
-import { schema } from "./schema.js";
+import { schema } from "./schema";
 import jwt from "jsonwebtoken";
-import { MESSAGES } from "../constants/messages.js";
+import { MESSAGES } from "../constants/messages";
+import { redisInstance } from "../services/redisService";
 
 // We isolate Apollo Startup to prevent breaking Supertest execution natively
 export const startApolloServer = async (app: express.Application) => {
@@ -18,16 +19,17 @@ export const startApolloServer = async (app: express.Application) => {
           return {
             async willSendResponse({ response, errors }) {
               // 🚀 Refined check: If ANY error is authentication related, force a 401!
-              const hasAuthError = errors?.some(e => 
-                e.message.includes(MESSAGES.AUTH.UNAUTHENTICATED) || 
-                e.message.includes(MESSAGES.AUTH.NOT_AUTHORIZED) || 
-                e.extensions?.code === MESSAGES.AUTH.UNAUTHENTICATED
+              const hasAuthError = errors?.some(
+                (e) =>
+                  e.message.includes(MESSAGES.AUTH.UNAUTHENTICATED) ||
+                  e.message.includes(MESSAGES.AUTH.NOT_AUTHORIZED) ||
+                  e.extensions?.code === MESSAGES.AUTH.UNAUTHENTICATED,
               );
 
-              if (hasAuthError && response.body.kind === 'single') {
+              if (hasAuthError && response.body.kind === "single") {
                 response.http.status = 401;
               }
-            }
+            },
           };
         },
       },
@@ -61,16 +63,22 @@ export const startApolloServer = async (app: express.Application) => {
               process.env.ACCESS_TOKEN_SECRET as string,
             );
           } catch (err: any) {
-             // CRITICAL: We don't throw here to avoid breaking public mutations like Login.
-             // Instead, we mark it as expired for Pothos to handle in AuthScopes!
-             if (err.name === 'TokenExpiredError') {
-               isTokenExpired = true;
-             }
+            // CRITICAL: We don't throw here to avoid breaking public mutations like Login.
+            // Instead, we mark it as expired for Pothos to handle in AuthScopes!
+            if (err.name === "TokenExpiredError") {
+              isTokenExpired = true;
+            }
           }
         }
 
         // 2. The entire GraphQL API now perfectly understands who is making the request globally!
-        return { req, res, user: currentUser, isTokenExpired };
+        return {
+          req,
+          res,
+          user: currentUser,
+          isTokenExpired,
+          redis: redisInstance,
+        };
       },
     }),
   );

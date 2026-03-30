@@ -1,6 +1,6 @@
 import { eq } from 'drizzle-orm';
-import { db } from '../db/connection.js';
-import { users } from '../db/schema.js';
+import { db } from '../db/connection';
+import { users } from '../db/schema';
 
 export const getAllUsers = async (requestedFields?: string[]) => {
   
