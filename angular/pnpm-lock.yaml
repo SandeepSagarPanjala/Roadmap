@@ -66,6 +66,9 @@ importers:
       '@graphql-codegen/cli':
         specifier: ^6.2.1
         version: 6.2.1(@parcel/watcher@2.5.6)(@types/node@25.5.0)(graphql@16.13.2)(typescript@5.9.3)
+      '@graphql-codegen/near-operation-file-preset':
+        specifier: ^5.0.0
+        version: 5.0.0(graphql@16.13.2)
       '@graphql-codegen/typescript':
         specifier: ^5.0.9
         version: 5.0.9(graphql@16.13.2)
@@ -815,6 +818,12 @@ packages:
   '@graphql-codegen/gql-tag-operations@5.1.4':
     resolution: {integrity: sha512-tDj/0a1U7rDH3PQgLeA+PlgBNb593MIJ43oAOKMRgJPwIQ9T7p2oqBRLxwfFZFTDLwnwsGZ7xIKqIcGgyAIj5Q==}
     engines: {node: '>=16'}
+    peerDependencies:
+      graphql: ^0.8.0 || ^0.9.0 || ^0.10.0 || ^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0 || ^16.0.0
+
+  '@graphql-codegen/near-operation-file-preset@5.0.0':
+    resolution: {integrity: sha512-Ck5jMu2izbKFwODYCM/sGWNQKN4BN4fpxr8g99fs6ESH29yfWMjA1dbUlTbtQtR7iXy39jT8451BLTG4/vOIxQ==}
+    engines: {node: '>= 16.0.0'}
     peerDependencies:
       graphql: ^0.8.0 || ^0.9.0 || ^0.10.0 || ^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0 || ^16.0.0
 
@@ -4982,6 +4991,16 @@ snapshots:
       auto-bind: 4.0.0
       graphql: 16.13.2
       tslib: 2.6.3
+
+  '@graphql-codegen/near-operation-file-preset@5.0.0(graphql@16.13.2)':
+    dependencies:
+      '@graphql-codegen/add': 6.0.0(graphql@16.13.2)
+      '@graphql-codegen/plugin-helpers': 6.2.0(graphql@16.13.2)
+      '@graphql-codegen/visitor-plugin-common': 6.2.4(graphql@16.13.2)
+      '@graphql-tools/utils': 11.0.0(graphql@16.13.2)
+      graphql: 16.13.2
+      parse-filepath: 1.0.2
+      tslib: 2.8.1
 
   '@graphql-codegen/plugin-helpers@6.2.0(graphql@16.13.2)':
     dependencies:

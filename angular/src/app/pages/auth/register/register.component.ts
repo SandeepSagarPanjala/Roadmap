@@ -3,7 +3,7 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { Messages } from '../../../core/constants/messages.constants';
-import { AddUserGQL } from '../../../core/graphql/generated';
+import { AddUserGQL } from '../../../core/services/auth/auth.generated';
 
 @Component({
   selector: 'app-register',

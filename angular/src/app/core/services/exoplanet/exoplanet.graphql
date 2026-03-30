@@ -10,3 +10,11 @@ query GetAllExoplanets {
     solarSystemName
   }
 }
+
+query GetExoplanetsDashboard {
+  getAllExoplanets {
+    id
+    name
+    imageUrl
+  }
+}

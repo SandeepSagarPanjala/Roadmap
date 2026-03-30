@@ -1,8 +1,8 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { AuthService } from '../../core/services/auth.service';
-import { ExoplanetService } from '../../core/services/exoplanet.service';
-import { Exoplanet } from '../../core/graphql/generated';
+import { AuthService } from '../../core/services/auth/auth.service';
+import { ExoplanetService } from '../../core/services/exoplanet/exoplanet.service';
+import { Exoplanet } from '../../core/graphql/schema.generated';
 
 @Component({
   selector: 'app-dashboard',

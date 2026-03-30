@@ -41,6 +41,7 @@
     "@angular/platform-browser-dynamic": "^21.2.0",
     "@eslint/js": "^10.0.1",
     "@graphql-codegen/cli": "^6.2.1",
+    "@graphql-codegen/near-operation-file-preset": "^5.0.0",
     "@graphql-codegen/typescript": "^5.0.9",
     "@graphql-codegen/typescript-apollo-angular": "^5.0.0",
     "@graphql-codegen/typescript-operations": "^5.0.9",

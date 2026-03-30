@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { Observable, map } from 'rxjs';
-import { GetAllExoplanetsGQL, Exoplanet } from '../graphql/generated';
+import { GetAllExoplanetsGQL } from './exoplanet.generated';
+import { Exoplanet } from '../../graphql/schema.generated';
 
 @Injectable({
   providedIn: 'root'

@@ -2,13 +2,16 @@ import SchemaBuilder from '@pothos/core';
 import ValidationPlugin from '@pothos/plugin-validation';
 import ScopeAuthPlugin from '@pothos/plugin-scope-auth';
 import { Request, Response } from 'express';
+import { GraphQLError } from 'graphql';
+import { MESSAGES } from '../constants/messages.js';
 
 // We register exactly ONE instance of the Validation engine globally!
 export const builder = new SchemaBuilder<{
   Context: { 
     req: Request; 
     res: Response;
-    user?: any; // Informing Pothos that a JWT user payload might securely exist!
+    user?: any;
+    isTokenExpired?: boolean;
   };
   AuthScopes: {
     auth: boolean;
@@ -16,9 +19,17 @@ export const builder = new SchemaBuilder<{
 }>({
   plugins: [ScopeAuthPlugin, ValidationPlugin],
   scopeAuth: {
-    authScopes: async (context) => ({
-      // This executes on every request and perfectly binds 'auth' to whether extracting JWT succeeded!
-      auth: !!context.user,
-    }),
+    authScopes: async (context) => {
+      // If a token was provided BUT it's expired, we throw explicitly using a formatted GraphQLError!
+      if (context.isTokenExpired) {
+        throw new GraphQLError(`${MESSAGES.AUTH.UNAUTHENTICATED}: Token has naturally expired.`, {
+          extensions: { code: MESSAGES.AUTH.UNAUTHENTICATED },
+        });
+      }
+      return {
+        // Otherwise, standard check if user exists
+        auth: !!context.user,
+      };
+    },
   }
 });

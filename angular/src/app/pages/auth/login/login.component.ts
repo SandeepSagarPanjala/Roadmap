@@ -1,9 +1,9 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import { AuthService } from '../../../core/services/auth.service';
+import { AuthService } from '../../../core/services/auth/auth.service';
 import { Messages } from '../../../core/constants/messages.constants';
-import { LoginUserMutationVariables } from '../../../core/graphql/generated';
+import { LoginUserMutationVariables } from '../../../core/services/auth/auth.generated';
 
 @Component({
   selector: 'app-login',

@@ -1,14 +1,14 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable, tap, map, catchError, throwError } from 'rxjs';
-import { environment } from '../../../environments/environment';
+import { environment } from '../../../../environments/environment';
 import { 
   LoginUserGQL, 
   RefreshSessionGQL, 
   LogoutUserGQL,
   LoginUserMutationVariables,
   LoginUserMutation
-} from '../graphql/generated';
+} from './auth.generated';
 
 export interface Tokens {
   accessToken: string;

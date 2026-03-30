@@ -10,7 +10,9 @@ export const MESSAGES = {
     TOKEN_NOT_FOUND: "Token not found",
     TOKEN_REUSE_DETECTED: "Token reuse detected! All sessions invalidated.",
     INVALID_OR_EXPIRED_TOKEN: "Invalid or expired token",
-    INVALID_TOKEN_EXPIRY: "Invalid REFRESH_TOKEN_EXPIRY mathematically parsed: "
+    INVALID_TOKEN_EXPIRY: "Invalid REFRESH_TOKEN_EXPIRY mathematically parsed: ",
+    UNAUTHENTICATED: "UNAUTHENTICATED",
+    NOT_AUTHORIZED: "Not authorized"
   },
   RATE_LIMIT: {
     TOO_MANY_REQUESTS: "Too many requests from this IP, please try again after 15 minutes"

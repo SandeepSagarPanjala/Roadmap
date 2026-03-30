@@ -3,19 +3,28 @@ import type { CodegenConfig } from '@graphql-codegen/cli';
 const graphQLUrl = 'http://localhost:3000/';
 
 const config: CodegenConfig = {
-  // 1. Connect straight to your running Pothos/Drizzle backend!
+  // 1. Point to your Backend API as usual
   schema: graphQLUrl + 'graphql',
 
-  // 2. Discover all the hand-written decoupled UI Operation Files!
-  documents: 'src/app/core/graphql/operations/**/*.graphql',
+  // 2. Discover all local .graphql files next to their services!
+  documents: 'src/app/**/*.graphql',
 
-  // 3. Compile everything together into an enterprise-grade fully typed Angular SDK!
   generates: {
-    'src/app/core/graphql/generated.ts': {
-      plugins: ['typescript', 'typescript-operations', 'typescript-apollo-angular'],
+    // 3. Generate one core file for shared Types & Enums (schema level)
+    'src/app/core/graphql/schema.generated.ts': {
+      plugins: ['typescript'],
+    },
+
+    // 4. Generate decentralized .generated.ts files NEAR their .graphql files!
+    'src/': {
+      preset: 'near-operation-file',
+      presetConfig: {
+        extension: '.generated.ts',
+        baseTypesPath: 'app/core/graphql/schema.generated.ts',
+      },
+      plugins: ['typescript-operations', 'typescript-apollo-angular'],
       config: {
-        // We ensure strict Apollo class generation (GQL ending) that natively uses decorators
-        // and provides the services at root (tree-shaking friendly in Angular!)
+        // We preserve your strict Apollo GQL service suffixes
         addExplicitOverride: true,
         querySuffix: 'GQL',
         mutationSuffix: 'GQL',
