@@ -9,7 +9,8 @@
     "db:pull": "drizzle-kit pull",
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
-    "build": "tsc -p tsconfig.prod.json",
+    "build": "tsup index.ts --format esm --clean --minify --no-splitting",
+    "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest"
   },
@@ -56,6 +57,7 @@
     "@types/supertest": "^7.2.0",
     "drizzle-kit": "^0.31.10",
     "supertest": "^7.2.2",
+    "tsup": "^8.5.1",
     "tsx": "^4.21.0",
     "typescript": "^6.0.2",
     "vitest": "^4.1.1"
