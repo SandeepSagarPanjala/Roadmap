@@ -1,8 +1,9 @@
 name: Deploy Angular (Github Pages)
+run-name: Frontend Deploy by @${{ github.actor }} 🚀
 
 on:
   push:
-    branches: ["main", "master", "develop"]
+    branches: ["develop"]
   workflow_dispatch:
 
 concurrency:
@@ -12,6 +13,10 @@ concurrency:
 jobs:
   build_and_deploy:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./angular
+
     steps:
       - name: Checkout Source Code
         uses: actions/checkout@v4
@@ -22,33 +27,26 @@ jobs:
           node-version: 20
 
       - name: Setup pnpm
-        uses: pnpm/action-setup@v3
+        uses: pnpm/action-setup@v5
         with:
           version: 10
 
       - name: Install Frontend Dependencies
         run: pnpm install
-        working-directory: ./angular
 
       - name: Build Application (Production Payload)
         run: pnpm run build --configuration production
-        working-directory: ./angular
 
       - name: Fix SPA Routing (Copy index.html to 404.html)
         run: cp ./dist/angular/browser/index.html ./dist/angular/browser/404.html
-        working-directory: ./angular
 
-      - name: Deploy Payload exactly to SandeepSagarPanjala.github.io
+      - name: Deploy Payload to Portfolio Repo
         uses: peaceiris/actions-gh-pages@v4
         with:
-          # This connects to the Personal Access Token you saved in the Roadmap Settings safely
           personal_token: ${{ secrets.DEPLOY_PAT_TOKEN }}
-          # This is the physical destination where the code will be pushed
           external_repository: SandeepSagarPanjala/SandeepSagarPanjala.github.io
-          # Commits strictly the output static files into the `develop` branch
           publish_branch: develop
+          # Note: We still use the full path here because 'uses' steps don't follow 'defaults'
           publish_dir: ./angular/dist/angular/browser
-          # This ensures GitHub Pages always remembers your custom domain name even after an overwrite!
           cname: sandeepsagar.work
-          # This keeps the history in your portfolio repository completely clean and 1-commit deep!
           force_orphan: true
