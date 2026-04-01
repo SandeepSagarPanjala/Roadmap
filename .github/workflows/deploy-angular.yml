@@ -1,9 +1,9 @@
-name: Deploy Angular (Cross-Repository)
+name: Deploy Angular (Github Pages)
 
 on:
   push:
-    branches: ["main", "master", "develop"] 
-  workflow_dispatch: 
+    branches: ["main", "master", "develop"]
+  workflow_dispatch:
 
 concurrency:
   group: "cross-repo-pages"
@@ -49,4 +49,4 @@ jobs:
           publish_branch: develop
           publish_dir: ./angular/dist/angular/browser
           # This keeps the history in your portfolio repository completely clean and 1-commit deep!
-          force_orphan: true 
+          force_orphan: true

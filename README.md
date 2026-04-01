@@ -36,5 +36,7 @@ Create Tunner through Network
 # Problems
 
 n + 1 problem
-
+db: push
+idel timeout
+login tabindex
 .

@@ -1,7 +1,8 @@
-name: Deploy to MacBook
+name: Deploy Node API (Self-Hosted)
 on:
   push:
     branches: [develop] # or master
+  workflow_dispatch:
 
 jobs:
   deploy:
