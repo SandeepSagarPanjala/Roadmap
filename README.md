@@ -26,6 +26,13 @@ pnpm install
 pnpm run build
 pm2 restart node-api
 
+# Cloudflare
+
+brew install cloudflared
+Create Tunner through Network
+
+# Github Runner
+
 # Problems
 
 n + 1 problem

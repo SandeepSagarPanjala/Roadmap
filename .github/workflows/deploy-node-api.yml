@@ -1,0 +1,23 @@
+name: Deploy to MacBook
+on:
+  push:
+    branches: [develop] # or master
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Install Dependencies
+        run: pnpm install
+
+      - name: Run Database Migrations
+        run: pnpm run db:pull
+
+      - name: Build Project
+        run: pnpm build
+
+      - name: Restart API
+        run: pm2 restart node-api
