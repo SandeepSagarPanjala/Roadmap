@@ -48,5 +48,7 @@ jobs:
           # Commits strictly the output static files into the `develop` branch
           publish_branch: develop
           publish_dir: ./angular/dist/angular/browser
+          # This ensures GitHub Pages always remembers your custom domain name even after an overwrite!
+          cname: sandeepsagar.work
           # This keeps the history in your portfolio repository completely clean and 1-commit deep!
           force_orphan: true
