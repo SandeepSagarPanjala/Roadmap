@@ -1,8 +1,6 @@
 import { pgTable, unique, uuid, varchar, text, boolean, timestamp, foreignKey, date, numeric } from "drizzle-orm/pg-core"
 import { sql } from "drizzle-orm"
 
-
-
 export const users = pgTable("users", {
 	id: uuid().default(sql`uuid_generate_v4()`).primaryKey().notNull(),
 	email: varchar({ length: 255 }),

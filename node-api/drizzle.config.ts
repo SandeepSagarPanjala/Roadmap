@@ -9,7 +9,7 @@ export default defineConfig({
   schema: "./src/db/schema.ts",
 
   // This is where Drizzle will save the history/diary of SQL files and snapshots
-  out: "./src/db",
+  out: "./src/db/migrations",
 
   dialect: "postgresql",
   dbCredentials: {
