@@ -1,0 +1,41 @@
+name: cosmos-api-docker
+
+version: "3.8"
+
+services:
+  # 1. THE API
+  cosmos-api-service:
+    container_name: cosmos-api-service
+    build: .
+    restart: always
+    env_file: .env
+    ports:
+      - "3001:3000"
+    depends_on:
+      - cosmos-db-service
+      - cosmos-redis-service
+
+  # 2. THE DATABASE
+  cosmos-db-service:
+    container_name: cosmos-db-service
+    image: postgres:alpine
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123456
+      POSTGRES_DB: Roadmap
+    volumes:
+      - postgres_data:/var/lib/postgresql/data # This keeps your data safe!
+    ports:
+      - "5433:5432" # Allows you to still use pgAdmin/DBeaver on your Mac
+
+  # 3. THE CACHE
+  cosmos-redis-service:
+    container_name: cosmos-redis-service
+    image: redis:alpine
+    restart: always
+    ports:
+      - "6380:6379" # Allows you to still use Redis CLI on your Mac
+
+volumes:
+  postgres_data: # This defines the permanent storage

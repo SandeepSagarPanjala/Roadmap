@@ -1,9 +1,9 @@
-name: Deploy Node API (Self-Hosted)
+name: Deploy Node API (Dockerized)
 run-name: Backend Deploy by @${{ github.actor }} 🚀
 
 on:
   push:
-    branches: [develop] # or master
+    branches: [develop] # or main
   workflow_dispatch:
 
 jobs:
@@ -16,18 +16,19 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
+      # We still need this to inject secrets into the Docker build
       - name: Create .env file
         run: |
           echo "${{ secrets.ENV_FILE }}" > .env
 
-      - name: Install Dependencies
-        run: pnpm install
+      # This one command replaces Install, Build, and Restart!
+      - name: Build and Start Containers
+        run: docker-compose up -d --build
 
+      # We run migrations INSIDE the container so we don't need pnpm on the Mac
       - name: Run Database Migrations
-        run: pnpm run db:migrate
+        run: docker exec cosmos-api-service pnpm run db:migrate
 
-      - name: Build Project
-        run: pnpm build
-
-      - name: Restart API
-        run: pm2 restart node-api-prod
+      # Optional: Clean up old, unused Docker images to save space on your Mac
+      - name: Docker System Prune
+        run: docker image prune -f

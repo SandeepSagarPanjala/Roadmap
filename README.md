@@ -26,6 +26,9 @@ pnpm install
 pnpm run build
 pm2 restart node-api
 
+pm2 list
+pm2 describe node-api
+
 # Cloudflare
 
 brew install cloudflared
