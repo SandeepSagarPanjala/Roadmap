@@ -29,6 +29,7 @@ jobs:
         with:
           context: ./node-api
           push: true
+          platforms: linux/arm64
           # Make sure this matches your GHCR path exactly
           tags: ghcr.io/sandeepsagarpanjala/cosmos-api:latest
 
