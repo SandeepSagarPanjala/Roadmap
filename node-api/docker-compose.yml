@@ -1,21 +1,32 @@
 name: cosmos-api-docker
 
 services:
-  # 1. THE API
+  # 1. THE GATEKEEPER (Nginx)
+  cosmos-proxy:
+    image: nginx:alpine
+    container_name: cosmos-proxy
+    restart: always
+    ports:
+      - "8090:80" # This is the only "Front Door" people should use
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro # Added :ro for safety
+    depends_on:
+      - cosmos-api-service
+
+  # 2. THE API
   cosmos-api-service:
     container_name: cosmos-api-service
-    # Corrected image path based on your GitHub username
     image: ghcr.io/sandeepsagarpanjala/cosmos-api:latest
     restart: always
-    # Docker reads this file into memory only when the container starts
     env_file: .env
-    ports:
-      - "3001:3000"
+    # CHANGE THIS:
+    expose:
+      - "3000" # Hidden from Mac, visible to Nginx
     depends_on:
       - cosmos-db-service
       - cosmos-redis-service
 
-  # 2. THE DATABASE
+  # 3. THE DATABASE (Keep ports if you want to use a DB GUI like DBeaver from your Mac)
   cosmos-db-service:
     container_name: cosmos-db-service
     image: postgres:alpine
@@ -29,7 +40,7 @@ services:
     ports:
       - "5433:5432"
 
-  # 3. THE CACHE
+  # 4. THE CACHE
   cosmos-redis-service:
     container_name: cosmos-redis-service
     image: redis:alpine
