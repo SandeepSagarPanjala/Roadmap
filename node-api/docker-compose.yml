@@ -1,13 +1,13 @@
 name: cosmos-api-docker
 
-version: "3.8"
-
 services:
   # 1. THE API
   cosmos-api-service:
     container_name: cosmos-api-service
-    build: .
+    # Corrected image path based on your GitHub username
+    image: ghcr.io/sandeepsagarpanjala/cosmos-api:latest
     restart: always
+    # Docker reads this file into memory only when the container starts
     env_file: .env
     ports:
       - "3001:3000"
@@ -25,9 +25,9 @@ services:
       POSTGRES_PASSWORD: 123456
       POSTGRES_DB: Roadmap
     volumes:
-      - postgres_data:/var/lib/postgresql/data # This keeps your data safe!
+      - postgres_data:/var/lib/postgresql/data
     ports:
-      - "5433:5432" # Allows you to still use pgAdmin/DBeaver on your Mac
+      - "5433:5432"
 
   # 3. THE CACHE
   cosmos-redis-service:
@@ -35,7 +35,7 @@ services:
     image: redis:alpine
     restart: always
     ports:
-      - "6380:6379" # Allows you to still use Redis CLI on your Mac
+      - "6380:6379"
 
 volumes:
-  postgres_data: # This defines the permanent storage
+  postgres_data:

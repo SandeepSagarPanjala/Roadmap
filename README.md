@@ -43,3 +43,6 @@ db: push
 idel timeout
 login tabindex
 .
+
+why whole file pulling into mac
+Secrets

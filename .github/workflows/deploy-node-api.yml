@@ -1,13 +1,37 @@
-name: Deploy Node API (Dockerized)
+name: Deploy Cosmos Api (Self Hosted)
 run-name: Backend Deploy by @${{ github.actor }} 🚀
 
 on:
   push:
-    branches: [develop] # or main
+    branches: [develop]
   workflow_dispatch:
 
 jobs:
+  # JOB 1: THE FACTORY (Builds the image on GitHub's clean Linux servers)
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and Push Image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./node-api
+          push: true
+          # Make sure this matches your GHCR path exactly
+          tags: ghcr.io/${{ github.repository_owner }}/cosmos-api:latest
+
+  # JOB 2: THE STOREFRONT (Runs on your Mac)
   deploy:
+    needs: build-and-push
     runs-on: self-hosted
     defaults:
       run:
@@ -16,19 +40,26 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      # We still need this to inject secrets into the Docker build
+      # 1. Create the .env from your GitHub Secret (The 1000 properties)
       - name: Create .env file
         run: |
           echo "${{ secrets.ENV_FILE }}" > .env
+          chmod 600 .env
 
-      # This one command replaces Install, Build, and Restart!
-      - name: Build and Start Containers
-        run: docker-compose up -d --build
+      # 2. Pull the PRE-BUILT image from GitHub and start it
+      - name: Deploy to Docker
+        run: |
+          docker compose pull
+          docker compose up -d
 
-      # We run migrations INSIDE the container so we don't need pnpm on the Mac
+      # 3. Run Database Migrations
       - name: Run Database Migrations
-        run: docker exec cosmos-api-service pnpm run db:migrate
+        run: |
+          sleep 5 
+          docker exec cosmos-api-service pnpm run db:migrate
 
-      # Optional: Clean up old, unused Docker images to save space on your Mac
+      # 4. Clean up the disk
       - name: Docker System Prune
-        run: docker image prune -f
+        run: |
+          docker image prune -f
+          rm .env # Optional: Remove the file now that RAM has the values

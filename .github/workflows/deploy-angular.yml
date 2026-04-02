@@ -1,4 +1,4 @@
-name: Deploy Angular (Github Pages)
+name: Deploy Cosmos UI (Github Pages)
 run-name: Frontend Deploy by @${{ github.actor }} 🚀
 
 on:
