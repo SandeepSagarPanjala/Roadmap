@@ -44,5 +44,6 @@ idel timeout
 login tabindex
 .
 
-why whole file pulling into mac
-Secrets
+# Workflow Docker Permission
+
+nano ~/.docker/config.json

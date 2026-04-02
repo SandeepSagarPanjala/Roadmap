@@ -7,6 +7,7 @@ on:
   workflow_dispatch:
 
 jobs:
+  # JOB 1: THE FACTORY (Builds the image on GitHub's clean Linux servers)
   build-and-push:
     runs-on: ubuntu-latest
     permissions:
@@ -28,14 +29,13 @@ jobs:
         with:
           context: ./node-api
           push: true
+          # Make sure this matches your GHCR path exactly
           tags: ghcr.io/sandeepsagarpanjala/cosmos-api:latest
 
+  # JOB 2: THE STOREFRONT (Runs on your Mac)
   deploy:
     needs: build-and-push
     runs-on: self-hosted
-    permissions:
-      contents: read
-      packages: read
     defaults:
       run:
         working-directory: ./node-api
@@ -43,31 +43,26 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
+      # 1. Create the .env from your GitHub Secret (The 1000 properties)
       - name: Create .env file
         run: |
           echo "${{ secrets.ENV_FILE }}" > .env
           chmod 600 .env
 
-      - name: Log in to GHCR without macOS keychain
-        env:
-          DOCKER_CONFIG: ${{ runner.temp }}/.docker
-        run: |
-          mkdir -p "$DOCKER_CONFIG"
-          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
-
+      # 2. Pull the PRE-BUILT image from GitHub and start it
       - name: Deploy to Docker
-        env:
-          DOCKER_CONFIG: ${{ runner.temp }}/.docker
         run: |
           docker compose pull
           docker compose up -d
 
+      # 3. Run Database Migrations
       - name: Run Database Migrations
         run: |
-          sleep 5
+          sleep 5 
           docker exec cosmos-api-service pnpm run db:migrate
 
+      # 4. Clean up the disk
       - name: Docker System Prune
         run: |
           docker image prune -f
-          rm -f .env
+          rm .env # Optional: Remove the file now that RAM has the values
