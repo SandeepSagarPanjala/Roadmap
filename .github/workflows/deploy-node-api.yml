@@ -27,7 +27,7 @@ jobs:
           context: ./node-api
           push: true
           # Make sure this matches your GHCR path exactly
-          tags: ghcr.io/${{ github.repository_owner }}/cosmos-api:latest
+          tags: ghcr.io/sandeepsagarpanjala/cosmos-api:latest
 
   # JOB 2: THE STOREFRONT (Runs on your Mac)
   deploy:
